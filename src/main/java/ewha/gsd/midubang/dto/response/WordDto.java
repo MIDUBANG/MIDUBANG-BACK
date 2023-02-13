@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 public class WordDto {
-    private final Long word_id;
+    private Long word_id;
     private String word;
     private String meaning;
 
@@ -24,5 +24,7 @@ public class WordDto {
         this.meaning = memberWord.getWord().getMeaning();
         this.word_date = memberWord.getWord_date();
     }
+
+
 
 }

@@ -3,6 +3,8 @@ package ewha.gsd.midubang.controller;
 import ewha.gsd.midubang.dto.MemberWordDto;
 import ewha.gsd.midubang.dto.UserInfoDto;
 import ewha.gsd.midubang.dto.response.MyWordListDto;
+import ewha.gsd.midubang.dto.response.SimpleWordDto;
+import ewha.gsd.midubang.dto.response.WordDto;
 import ewha.gsd.midubang.entity.Member;
 import ewha.gsd.midubang.entity.MemberWord;
 import ewha.gsd.midubang.jwt.TokenProvider;
@@ -52,6 +54,7 @@ public class WordController {
         return ResponseEntity.ok().build();
     }
 
+    //단어 리스트 조희
     @GetMapping("/word/list")
     public ResponseEntity<MyWordListDto> getMyWordList(HttpServletRequest request, @PageableDefault Pageable pageable ){
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
@@ -60,5 +63,19 @@ public class WordController {
         return ResponseEntity.status(HttpStatus.OK).body(myWordListDto);
     }
 
+    //저장된 단어 중 특정 단어 조회
+    @GetMapping("/word/my/{word_id}")
+    public ResponseEntity<WordDto> getMyWord(HttpServletRequest request, @PathVariable Long word_id){
+        UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
+        WordDto wordDto = wordService.getWord(userInfoDto.getMember_id(), word_id);
+        return ResponseEntity.status(HttpStatus.OK).body(wordDto);
+    }
+
+    //특정 단어 조회
+    @GetMapping("/word/{word_id}")
+    public ResponseEntity<SimpleWordDto> getAWord(@PathVariable Long word_id){
+        SimpleWordDto simpleWordDto = wordService.getAWord(word_id);
+        return ResponseEntity.status(HttpStatus.OK).body(simpleWordDto);
+    }
 
 }

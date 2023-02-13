@@ -60,7 +60,10 @@ public class JwtAuthorizationFilter  extends BasicAuthenticationFilter {
             sendErrorMessage((HttpServletResponse) response,  "unsupported token"); //지원하지 않는 토큰
         } catch (ExpiredJwtException e) {
             sendErrorMessage((HttpServletResponse) response,  "expired token"); //만료된 토큰
-        }catch(IllegalArgumentException e){
+
+        }catch(SignatureException e){
+            sendErrorMessage((HttpServletResponse) response, "signature not matched");
+        }catch (IllegalArgumentException e){
             sendErrorMessage((HttpServletResponse) response, "empty token"); //빈 토큰
         }
 

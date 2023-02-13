@@ -26,14 +26,15 @@ public class Case {
     @Enumerated(EnumType.STRING)
     private CaseType type;
 
-//    @OneToMany(mappedBy = "case")
-//    private List<CaseWord> caseWordList = new ArrayList<CaseWord>();
+    private String word_ref;
 
 
     @Builder
-    public Case(String desc, String article_url){
+    public Case(String desc, String article_url, CaseType type, String word_ref){
         this.desc = desc;
         this.article_url = article_url;
+        this.type = type;
+        this.word_ref = word_ref;
 
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static ewha.gsd.midubang.entity.QMemberWord.*;
@@ -63,5 +64,25 @@ public class WordRepository {
 
         return PageableExecutionUtils.getPage(findAllWords, pageable, findAllWords::size);
 
+    }
+
+    public MemberWord findMyWord(Long member_id, Long word_id){
+        queryFactory = new JPAQueryFactory(em);
+        MemberWord myword = queryFactory.selectFrom(memberWord)
+                .leftJoin(memberWord.word, word1)
+                .where(memberWord.member.member_id.eq(member_id)
+                        .and(memberWord.word.word_id.eq(word_id)))
+                .fetchOne();
+
+        return myword;
+    }
+
+    public List<Word> findWordsById(List<Long> ids){
+        List<Word> result = new ArrayList<>();
+        for(Long id : ids){
+            result.add(em.find(Word.class, id));
+        }
+
+        return result;
     }
 }

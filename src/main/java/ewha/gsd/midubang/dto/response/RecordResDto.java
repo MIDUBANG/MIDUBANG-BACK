@@ -14,9 +14,13 @@ public class RecordResDto {
     private Record record;
     private List<MyCaseDto> myCaseDto;
 
-    public RecordResDto(Record record, List<MyCaseDto> myCaseDto){
+    private List<SimpleWordDto> simpleWordDtos;
+
+
+    public RecordResDto(Record record, List<MyCaseDto> myCaseDto, List<SimpleWordDto> simpleWordDtos){
         this.record = record;
         this.myCaseDto = myCaseDto;
+        this.simpleWordDtos= simpleWordDtos;
     }
 
 

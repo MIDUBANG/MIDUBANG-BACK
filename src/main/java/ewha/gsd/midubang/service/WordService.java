@@ -2,6 +2,7 @@ package ewha.gsd.midubang.service;
 
 import ewha.gsd.midubang.dto.MemberWordDto;
 import ewha.gsd.midubang.dto.response.MyWordListDto;
+import ewha.gsd.midubang.dto.response.SimpleWordDto;
 import ewha.gsd.midubang.dto.response.WordDto;
 import ewha.gsd.midubang.entity.Member;
 import ewha.gsd.midubang.entity.MemberWord;
@@ -73,5 +74,21 @@ public class WordService {
 
         return list;
 
+    }
+
+    public WordDto getWord(Long member_id, Long word_id){
+        MemberWord memberWord = wordRepository.findMyWord(member_id, word_id);
+        if(memberWord==null){
+            throw new ApiRequestException("word not exist");
+        }
+        return new WordDto(memberWord);
+    }
+
+    public SimpleWordDto getAWord(Long word_id){
+        Word aWord = wordRepository.findWordById(word_id);
+        if(aWord==null){
+            throw new ApiRequestException("word not exist");
+        }
+        return new SimpleWordDto(aWord);
     }
 }

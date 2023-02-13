@@ -1,28 +1,27 @@
 package ewha.gsd.midubang.service;
 
+import com.querydsl.core.Tuple;
 import ewha.gsd.midubang.dto.RecordReqDto;
-import ewha.gsd.midubang.dto.response.MyCaseDto;
-import ewha.gsd.midubang.dto.response.RecordListResDto;
-import ewha.gsd.midubang.dto.response.RecordResDto;
-import ewha.gsd.midubang.dto.response.RecordSimpleResDto;
-import ewha.gsd.midubang.entity.Case;
-import ewha.gsd.midubang.entity.Member;
-import ewha.gsd.midubang.entity.Record;
-import ewha.gsd.midubang.entity.RecordCase;
+import ewha.gsd.midubang.dto.response.*;
+import ewha.gsd.midubang.entity.*;
 import ewha.gsd.midubang.exception.ApiRequestException;
 import ewha.gsd.midubang.jwt.TokenProvider;
-import ewha.gsd.midubang.repository.CaseRepository;
-import ewha.gsd.midubang.repository.MemberRepository;
-import ewha.gsd.midubang.repository.RecordCaseRepository;
-import ewha.gsd.midubang.repository.RecordRepository;
+import ewha.gsd.midubang.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static ewha.gsd.midubang.entity.QRecordCase.recordCase;
 
 
 @Service
@@ -35,6 +34,7 @@ public class AnalysisService {
     private final RecordCaseRepository recordCaseRepository;
     private final MemberRepository memberRepository;
     private final RecordRepository recordRepository;
+    private final WordRepository wordRepository;
 
     public Long saveRecord(Long user_id, RecordReqDto recordReqDto){
         Member member = memberRepository.findById(user_id).orElseThrow(()-> new ApiRequestException("user not found"));
@@ -84,13 +84,6 @@ public class AnalysisService {
     }
 
 
-    //빠진 특약 정보 얻기
-    public RecordResDto getOmissionCases (Long record_id){
-        Record record = recordRepository.findRecordById(record_id);
-        List<MyCaseDto> myCaseDtoList = recordCaseRepository.findOmissionRecordCasesById(record_id);
-        return new RecordResDto(record, myCaseDtoList);
-
-    }
 
     public RecordListResDto getRecordList(Long member_id){
         List<Record> recordList = recordRepository.findRecordListByMemberId(member_id);
@@ -108,13 +101,53 @@ public class AnalysisService {
         if(record==null){
             throw new ApiRequestException("record_id not exist");
         }
-        List<MyCaseDto> myCaseDtoList = recordCaseRepository.findAllRecordCasesById(record_id);
-        return new RecordResDto(record, myCaseDtoList);
+        List<Tuple> caseList = recordCaseRepository.findAllRecordCasesById(record_id);
+        RecordResDto recordResDto = makeRecordResDto(record, caseList);
+
+        return recordResDto;
     }
 
     public void deleteRecord(Long record_id){
         recordCaseRepository.deleteRecordCase(record_id);
         recordRepository.deleteRecord(record_id);
 
+    }
+
+    public List<Long> strToLongList(String str){
+        long[] noArray = Stream.of(str.split(",")).mapToLong(Long::parseLong).toArray();
+        Long[] noListBoxed = ArrayUtils.toObject(noArray);
+        List<Long> noList = Arrays.asList(noListBoxed);
+
+        return noList;
+    }
+
+    public RecordResDto makeRecordResDto(Record record, List<Tuple> tuple){
+        List<MyCaseDto> myCaseDtoList = new ArrayList<>();
+        List<Long> wordList = new ArrayList<>();
+
+
+        for(Tuple t : tuple){
+            String str = t.get(recordCase.aCase.word_ref);
+            List<Long> noList = strToLongList(str);
+            wordList.addAll(noList);
+            MyCaseDto myCaseDto = MyCaseDto.builder()
+                    .case_id(t.get(recordCase.aCase.id))
+                    .desc(t.get(recordCase.aCase.desc))
+                    .caseType(t.get(recordCase.aCase.type))
+                    .case_exists(t.get(recordCase.case_exists))
+                    .word_ref(noList)
+                    .build();
+
+            myCaseDtoList.add(myCaseDto);
+
+        }
+
+        List<Long> newList = wordList.stream().distinct().collect(Collectors.toList());
+        List<SimpleWordDto> simpleWordDtoList = wordRepository.findWordsById(newList).stream()
+                .map(h-> new SimpleWordDto(h)).collect(Collectors.toList());
+
+        simpleWordDtoList.stream().sorted(Comparator.comparing(SimpleWordDto::getWord_id)).collect(Collectors.toList());
+
+        return new RecordResDto(record, myCaseDtoList, simpleWordDtoList);
     }
 }

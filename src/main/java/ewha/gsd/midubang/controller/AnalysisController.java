@@ -39,7 +39,7 @@ public class AnalysisController {
     public ResponseEntity<RecordResDto> saveRecord(HttpServletRequest request, @RequestBody RecordReqDto recordReqDto){
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
         Long record_id = analysisService.saveRecord(userInfoDto.getMember_id(), recordReqDto );
-        RecordResDto recordResDto = analysisService.getOmissionCases(record_id);
+        RecordResDto recordResDto = analysisService.getRecord(record_id);
         return ResponseEntity.status(HttpStatus.OK).body(recordResDto);
 
     }
