@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -99,7 +100,7 @@ public class TokenProvider {
         return TokenDTO.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
-                .tokenExpiresIn(accessTokenExpiresIn.getTime())
+                .tokenExpiresIn(ACCESS_TOKEN_EXPIRE_TIME)
                 .refreshToken(refreshToken)
                 .build();
     }
