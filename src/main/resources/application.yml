@@ -1,0 +1,24 @@
+spring:
+    jpa:
+        database-platform: org.hibernate.dialect.MariaDB103Dialect
+        hibernate:
+            ddl-auto: update
+        show-sql: false
+        format_sql: true
+
+    mvc:
+        hiddenmethod:
+            filter:
+                enabled: true
+
+    config:
+        import: application-secret.yml
+
+
+server:
+    port : 8080
+
+
+
+
+

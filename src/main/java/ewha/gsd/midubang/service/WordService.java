@@ -1,9 +1,6 @@
 package ewha.gsd.midubang.service;
 
-import ewha.gsd.midubang.dto.MemberWordDto;
-import ewha.gsd.midubang.dto.response.MyWordListDto;
-import ewha.gsd.midubang.dto.response.SimpleWordDto;
-import ewha.gsd.midubang.dto.response.WordDto;
+import ewha.gsd.midubang.dto.response.*;
 import ewha.gsd.midubang.entity.Member;
 import ewha.gsd.midubang.entity.MemberWord;
 import ewha.gsd.midubang.entity.Word;
@@ -11,7 +8,9 @@ import ewha.gsd.midubang.exception.ApiRequestException;
 import ewha.gsd.midubang.repository.MemberRepository;
 import ewha.gsd.midubang.repository.MemberWordRepository;
 import ewha.gsd.midubang.repository.WordRepository;
+import ewha.gsd.midubang.repository.WordRepositoryImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class WordService {
@@ -90,5 +90,12 @@ public class WordService {
             throw new ApiRequestException("word not exist");
         }
         return new SimpleWordDto(aWord);
+    }
+
+    public Page<SearchWordDto> getSearchWordList(String searchKeyword, Pageable pageable){
+        Page<Word> allSearchWords  = wordRepository.findByWordContaining(searchKeyword, pageable);
+        Page<SearchWordDto> searchWordDtos = allSearchWords.map(SearchWordDto::new);
+
+        return searchWordDtos;
     }
 }

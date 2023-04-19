@@ -2,15 +2,14 @@ package ewha.gsd.midubang.controller;
 
 import ewha.gsd.midubang.dto.MemberWordDto;
 import ewha.gsd.midubang.dto.UserInfoDto;
-import ewha.gsd.midubang.dto.response.MyWordListDto;
-import ewha.gsd.midubang.dto.response.SimpleWordDto;
-import ewha.gsd.midubang.dto.response.WordDto;
+import ewha.gsd.midubang.dto.response.*;
 import ewha.gsd.midubang.entity.Member;
 import ewha.gsd.midubang.entity.MemberWord;
 import ewha.gsd.midubang.jwt.TokenProvider;
 import ewha.gsd.midubang.service.MemberService;
 import ewha.gsd.midubang.service.WordService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -58,7 +57,7 @@ public class WordController {
     @GetMapping("/word/list")
     public ResponseEntity<MyWordListDto> getMyWordList(HttpServletRequest request, @PageableDefault Pageable pageable ){
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        MyWordListDto myWordListDto = wordService.getWordList(userInfoDto.getMember_id(),pageable);
+        MyWordListDto myWordListDto = wordService.getWordList(userInfoDto.getMember_id(), pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(myWordListDto);
     }
@@ -76,6 +75,13 @@ public class WordController {
     public ResponseEntity<SimpleWordDto> getAWord(@PathVariable Long word_id){
         SimpleWordDto simpleWordDto = wordService.getAWord(word_id);
         return ResponseEntity.status(HttpStatus.OK).body(simpleWordDto);
+    }
+
+    //단어 검색
+    @GetMapping("/word/search/list")
+    public ResponseEntity<Page<SearchWordDto>> getSearchWordList(@RequestParam String searchKeyword,  @PageableDefault Pageable pageable){
+        Page<SearchWordDto> searchWordDtos = wordService.getSearchWordList(searchKeyword, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(searchWordDtos);
     }
 
 }
