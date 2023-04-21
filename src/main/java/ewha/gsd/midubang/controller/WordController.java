@@ -86,8 +86,8 @@ public class WordController {
 
     //단어 검색
     @GetMapping("/word/search/list")
-    public ResponseEntity<Page<SearchWordDto>> getSearchWordList(@RequestParam String searchKeyword,  @PageableDefault Pageable pageable){
-        Page<SearchWordDto> searchWordDtos = wordService.getSearchWordList(searchKeyword, pageable);
+    public ResponseEntity<Page<SimpleWordDto>> getSearchWordList(@RequestParam String searchKeyword,  @PageableDefault Pageable pageable){
+        Page<SimpleWordDto> searchWordDtos = wordService.getSearchWordList(searchKeyword, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(searchWordDtos);
     }
 

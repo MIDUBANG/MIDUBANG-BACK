@@ -94,10 +94,9 @@ public class WordService {
         }
     }
     @Transactional(readOnly = true)
-
-    public Page<SearchWordDto> getSearchWordList(String searchKeyword, Pageable pageable){
+    public Page<SimpleWordDto> getSearchWordList(String searchKeyword, Pageable pageable){
         Page<Word> allSearchWords  = wordRepository.findByWordContaining(searchKeyword, pageable);
-        Page<SearchWordDto> searchWordDtos = allSearchWords.map(SearchWordDto::new);
+        Page<SimpleWordDto> searchWordDtos = allSearchWords.map(SimpleWordDto::new);
 
         return searchWordDtos;
     }
