@@ -8,7 +8,6 @@ import ewha.gsd.midubang.exception.ApiRequestException;
 import ewha.gsd.midubang.repository.MemberRepository;
 import ewha.gsd.midubang.repository.MemberWordRepository;
 import ewha.gsd.midubang.repository.WordRepository;
-import ewha.gsd.midubang.repository.WordRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,20 +15,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+
 
 
 @Service
 @Slf4j
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class WordService {
     private final MemberRepository memberRepository;
     private final WordRepository wordRepository;
     private final MemberWordRepository memberWordRepository;
 
+    @Transactional
     public MemberWord addWord(Long member_id, Long word_id){
         Member member = memberRepository.findById(member_id).orElseThrow(()-> new ApiRequestException("user not found"));
         if(!wordRepository.exitsInMyDict(member_id, word_id)){
@@ -38,7 +36,7 @@ public class WordService {
                 throw new ApiRequestException("존재하지 않는 단어 id");
             }
 
-            LocalDate currentDate = LocalDate.now();
+            LocalDateTime currentDate = LocalDateTime.now();
             MemberWord memberWord = MemberWord.builder()
                     .member(member)
                     .word(word)
@@ -53,28 +51,27 @@ public class WordService {
 
     }
 
+    @Transactional
     public void deleteWord(Long member_id, Long word_id){
         Member member = memberRepository.findById(member_id).orElseThrow(()-> new ApiRequestException("user not found"));
         wordRepository.deleteWord(member_id, word_id);
     }
+    @Transactional(readOnly = true)
+    public Page<SimpleWordDto> getWordList(Pageable pageable){
+        Page<Word> allWords = wordRepository.findAll(pageable);
+        Page<SimpleWordDto> wordList = allWords.map(SimpleWordDto::new);
+        return wordList;
+    }
+    @Transactional(readOnly = true)
 
-    public MyWordListDto getWordList(Long member_id, Pageable pageable){
-        Page<MemberWord> allWords  = wordRepository.findAll(member_id, pageable);
-        List<MemberWord> words = allWords.getContent();
-        List<WordDto> collect = words.stream()
-                .map(t->new WordDto(t))
-                .collect(Collectors.toList());
+    public Page<WordDto> getMyWordList(Long member_id, Pageable pageable){
+        Page<MemberWord> allWords  = wordRepository.findAllByMemberId(member_id, pageable);
+        Page<WordDto> myWordList = allWords.map(WordDto::new);
 
-        MyWordListDto list = new MyWordListDto(collect);
-        if(allWords.getTotalElements()==0){
-            list.setNoWord(true);
-        }else{
-            list.setNoWord(false);
-        }
-
-        return list;
+        return myWordList;
 
     }
+    @Transactional(readOnly = true)
 
     public WordDto getWord(Long member_id, Long word_id){
         MemberWord memberWord = wordRepository.findMyWord(member_id, word_id);
@@ -83,14 +80,20 @@ public class WordService {
         }
         return new WordDto(memberWord);
     }
+    @Transactional(readOnly = true)
 
-    public SimpleWordDto getAWord(Long word_id){
+    public SimpleWordDto getAWord(Long word_id, Long member_id){
         Word aWord = wordRepository.findWordById(word_id);
         if(aWord==null){
             throw new ApiRequestException("word not exist");
         }
-        return new SimpleWordDto(aWord);
+        if(wordRepository.exitsInMyDict(member_id, word_id)){
+            return new SimpleWordDto(aWord,true);
+        }else{
+            return new SimpleWordDto(aWord, false);
+        }
     }
+    @Transactional(readOnly = true)
 
     public Page<SearchWordDto> getSearchWordList(String searchKeyword, Pageable pageable){
         Page<Word> allSearchWords  = wordRepository.findByWordContaining(searchKeyword, pageable);

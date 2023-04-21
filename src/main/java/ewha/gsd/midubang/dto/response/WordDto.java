@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -15,7 +16,7 @@ public class WordDto {
     private String word;
     private String meaning;
 
-    private LocalDate word_date;
+    private LocalDateTime word_date;
 
     @Builder
     public WordDto(MemberWord memberWord){

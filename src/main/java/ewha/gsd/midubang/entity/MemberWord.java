@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,9 +30,10 @@ public class MemberWord {
     private Word word;
 
     @Column(name="word_date")
-    private @JsonFormat(pattern = "yyyy-MM-dd") LocalDate word_date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime word_date;
     @Builder
-    public MemberWord(Member member, Word word,LocalDate word_date){
+    public MemberWord(Member member, Word word,LocalDateTime word_date){
         this.member = member;
         this.word = word;
         this.word_date = word_date;

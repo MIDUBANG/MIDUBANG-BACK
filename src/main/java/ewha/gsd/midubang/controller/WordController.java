@@ -52,14 +52,20 @@ public class WordController {
 
         return ResponseEntity.ok().build();
     }
-
-    //단어 리스트 조희
+    //전체 단어 리스트 조회
     @GetMapping("/word/list")
-    public ResponseEntity<MyWordListDto> getMyWordList(HttpServletRequest request, @PageableDefault Pageable pageable ){
-        UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        MyWordListDto myWordListDto = wordService.getWordList(userInfoDto.getMember_id(), pageable);
+    public ResponseEntity<Page<SimpleWordDto>> getWordList(@PageableDefault Pageable pageable){
+        Page<SimpleWordDto> wordList = wordService.getWordList(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(wordList);
+    }
 
-        return ResponseEntity.status(HttpStatus.OK).body(myWordListDto);
+    //내 단어 리스트 조회
+    @GetMapping("word/my/list")
+    public ResponseEntity<Page<WordDto>> getMyWordList(HttpServletRequest request, @PageableDefault Pageable pageable ){
+        UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
+        Page<WordDto> myWordList = wordService.getMyWordList(userInfoDto.getMember_id(), pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(myWordList);
     }
 
     //저장된 단어 중 특정 단어 조회
@@ -72,8 +78,9 @@ public class WordController {
 
     //특정 단어 조회
     @GetMapping("/word/{word_id}")
-    public ResponseEntity<SimpleWordDto> getAWord(@PathVariable Long word_id){
-        SimpleWordDto simpleWordDto = wordService.getAWord(word_id);
+    public ResponseEntity<SimpleWordDto> getAWord(HttpServletRequest request, @PathVariable Long word_id){
+        UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
+        SimpleWordDto simpleWordDto = wordService.getAWord(word_id, userInfoDto.getMember_id());
         return ResponseEntity.status(HttpStatus.OK).body(simpleWordDto);
     }
 

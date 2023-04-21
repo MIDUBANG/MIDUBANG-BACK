@@ -52,7 +52,7 @@ public class WordRepositoryImpl implements WordRepositoryCustom {
                 .execute();
     }
 
-    public Page<MemberWord> findAll(Long member_id, Pageable pageable){
+    public Page<MemberWord> findAllByMemberId(Long member_id, Pageable pageable){
         List<MemberWord> findAllWords = queryFactory.selectFrom(memberWord)
                 .leftJoin(memberWord.word, word1)
                 .where(memberWord.member.member_id.eq(member_id))

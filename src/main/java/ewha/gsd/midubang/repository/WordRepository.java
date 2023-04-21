@@ -14,4 +14,5 @@ import java.util.List;
 @Repository
 public interface WordRepository extends JpaRepository<Word, Long>,WordRepositoryCustom{
     Page<Word> findByWordContaining(String keyword, Pageable pageable);
+    Page<Word> findAll(Pageable pageable);
 }
