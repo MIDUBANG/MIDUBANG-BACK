@@ -41,12 +41,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
           
-    - name: make application-secret.yml
-      env: 
-        MIDUBANG_SECRET: ${{ secrets.APPLICATION_SECRET_YML }}
-        MIDUBANG_SECRET_DIR: src/main/resources
-        MIDUBANG_SECRET_DIR_FILE_NAME: application-secret.yml
-      run: echo $MIDUBANG_SECRET | base64 --decode > $MIDUBANG_SECRET_DIR/$MIDUBANG_SECRET_DIR_FILE_NAME
+    - uses: actions/checkout@v2
+    - run: touch ./src/main/resources/application.yml
+    - run: echo ${{ secrets.APPLICATION_SECRET_YML }} > ./src/main/resources/application-secret.yml
+
+    - uses: actions/upload-artifact@v2
+      with:
+          name: application-secret.yml
+          path: ./src/main/resources/application-secret.yml
     
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
