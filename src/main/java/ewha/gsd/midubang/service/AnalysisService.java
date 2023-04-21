@@ -40,8 +40,8 @@ public class AnalysisService {
         LocalDate today = LocalDate.now();
         Record record = Record.builder()
                 .is_expensive(recordReqDto.getIs_expensive())
-                .answer_commission(recordReqDto.getCommission())
-                .commission(recordReqDto.getAnswer_commission())
+                .answer_commission(recordReqDto.getAnswer_commission())
+                .commission(recordReqDto.getCommission())
                 .record_date(today)
                 .contract_type(recordReqDto.getContract_type())
                 .image_url(recordReqDto.getImage_url())
