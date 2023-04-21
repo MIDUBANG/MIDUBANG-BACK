@@ -12,21 +12,27 @@ import java.util.List;
 @Data
 public class MyCaseDto {
     private Long case_id;
+
+    private String  case_detail;
     private String desc;
+    private String article_url;
     private CaseType caseType;
     private Boolean case_exists;
+    private String raw_case;
 
     private List<Long> word_ref;
 
 
 
     @Builder
-
-    public MyCaseDto(Long case_id, String desc, CaseType caseType, Boolean case_exists, List<Long> word_ref){
+    public MyCaseDto(Long case_id,String case_detail, String desc, String article_url, CaseType caseType, Boolean case_exists, String raw_case, List<Long> word_ref){
         this.case_id = case_id;
+        this.case_detail = case_detail;
         this.desc = desc;
+        this.article_url = article_url;
         this.caseType = caseType;
         this.case_exists = case_exists;
+        this.raw_case = raw_case;
         this.word_ref = word_ref;
     }
 

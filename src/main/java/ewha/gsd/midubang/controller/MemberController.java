@@ -27,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,12 +37,16 @@ public class MemberController {
 
     private final MemberService memberService;
     private final KakaoService kakaoService;
-    private final MemberRepository memberRepository;
     private  final TokenProvider tokenProvider;
+
+    @GetMapping("/info")
+    public ResponseEntity<UserInfoDto> getMyInfo(HttpServletRequest request){
+        UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
+        return ResponseEntity.status(HttpStatus.OK).body(userInfoDto);
+    }
 
     @PostMapping("/login/oauth/kakao")
     public ResponseEntity<TokenDTO> login(@RequestParam("code") String code) throws IOException, ServletException {
-        log.info(code);
         KakaoToken oauthToken = kakaoService.getAccessToken(code);
         Member saved_member = kakaoService.saveUser(oauthToken.getAccess_token());
 
@@ -51,10 +56,10 @@ public class MemberController {
     }
 
     //인증코드 받기 테스트용
-    @GetMapping("/login/oauth2/code/kakao")
-    public String KakaoCode(@RequestParam("code") String code) {
-        return "카카오 로그인 인증완료, code: " + code;
-    }
+//    @GetMapping("/login/oauth2/code/kakao")
+//    public String KakaoCode(@RequestParam("code") String code) {
+//        return "카카오 로그인 인증완료, code: " + code;
+//    }
 
     //access token 재발급
     @GetMapping("/refresh")
