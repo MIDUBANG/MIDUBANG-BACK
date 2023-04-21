@@ -46,9 +46,12 @@ public class RecordCaseRepository {
         List<Tuple> caseList = queryFactory
                 .select(
                         recordCase.aCase.id,
+                        recordCase.aCase.case_detail,
                         recordCase.aCase.desc,
+                        recordCase.aCase.article_url,
                         recordCase.aCase.type,
                         recordCase.case_exists,
+                        recordCase.raw_case,
                         recordCase.aCase.word_ref
                 )
                 .from(recordCase)

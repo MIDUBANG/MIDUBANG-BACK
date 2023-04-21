@@ -11,13 +11,13 @@ import java.util.List;
 
 @Getter
 public class RecordResDto {
-    private Record record;
+    private RecordDetailsDto record;
     private List<MyCaseDto> myCaseDto;
 
     private List<SimpleWordDto> simpleWordDtos;
 
 
-    public RecordResDto(Record record, List<MyCaseDto> myCaseDto, List<SimpleWordDto> simpleWordDtos){
+    public RecordResDto( RecordDetailsDto record, List<MyCaseDto> myCaseDto, List<SimpleWordDto> simpleWordDtos){
         this.record = record;
         this.myCaseDto = myCaseDto;
         this.simpleWordDtos= simpleWordDtos;

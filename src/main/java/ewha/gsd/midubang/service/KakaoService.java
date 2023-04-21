@@ -51,15 +51,12 @@ public class KakaoService {
 
 
     public KakaoToken getAccessToken(String code) throws JsonProcessingException {
-        log.info("서비스단");
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", GRANT_TYPE);
         params.add("client_id", CLIENT_ID);
         params.add("redirect_uri", REDIRECT_URI);
         params.add("code", code);
         params.add("client_secret", CLIENT_SECRET);
-
-        log.info(params.toString());
 
         WebClient wc = WebClient.create(TOKEN_URI);
         String response = wc.post()
@@ -108,10 +105,7 @@ public class KakaoService {
     @Transactional
     public Member saveUser(String access_token) {
         KakaoProfile profile = findProfile(access_token);
-        log.info(String.valueOf(profile));
         Member member = memberRepository.findByEmail(profile.getKakao_account().getEmail());
-        log.info("kakaoservice 113줄 member:"+member);
-
 
         if (member == null) {
             member = Member.builder()
@@ -119,9 +113,7 @@ public class KakaoService {
                     .password("")
                     .build();
             memberRepository.save(member);
-            log.info(String.valueOf(member));
         }
-
 
         return member;
     }

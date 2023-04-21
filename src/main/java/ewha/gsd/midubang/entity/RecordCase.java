@@ -27,13 +27,16 @@ public class RecordCase {
     @Column(name = "case_exists")
     private Boolean case_exists;
 
+    private String raw_case;
+
 
 
     @Builder
-    public RecordCase(Record record, Case aCase, Boolean case_exists){
+    public RecordCase(Record record, Case aCase, Boolean case_exists, String raw_case){
         this.record = record;
         this.aCase = aCase;
         this.case_exists = case_exists;
+        this.raw_case = raw_case;
     }
 
 
