@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MemberWordDto {
     private String email;
-    private Long word_id;
+    private Long wordId;
     private String word;
     private String meaning;
 
     @Builder
-    public MemberWordDto(String email, Long word_id, String word, String meaning){
+    public MemberWordDto(String email, Long wordId, String word, String meaning){
         this.email = email;
-        this.word_id=word_id;
+        this.wordId=wordId;
         this.word = word;
         this.meaning = meaning;
     }

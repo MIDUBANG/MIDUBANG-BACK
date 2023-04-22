@@ -31,25 +31,25 @@ public class RecordRepository {
         em.persist(record);
     }
 
-    public Record findRecordById(Long record_id){
-        return em.find(Record.class, record_id);
+    public Record findRecordById(Long recordId){
+        return em.find(Record.class, recordId);
     }
 
-    public List<Record> findRecordListByMemberId(Long member_id){
+    public List<Record> findRecordListByMemberId(Long memberId){
         queryFactory = new JPAQueryFactory(em);
         List<Record> recordList = queryFactory
                 .selectFrom(record)
-                .where(record.member.member_id.eq(member_id))
+                .where(record.member.memberId.eq(memberId))
                 .fetch();
 
 
         return  recordList;
     }
 
-    public void deleteRecord(Long record_id){
+    public void deleteRecord(Long recordId){
         queryFactory = new JPAQueryFactory(em);
         queryFactory.delete(record)
-                .where(record.record_id.eq(record_id))
+                .where(record.recordId.eq(recordId))
                 .execute();
     }
 

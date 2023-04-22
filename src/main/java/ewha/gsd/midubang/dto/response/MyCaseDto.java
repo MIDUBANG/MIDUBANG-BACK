@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 public class MyCaseDto {
-    private Long case_id;
+    private Long caseId;
 
     private String  case_detail;
     private String desc;
@@ -25,8 +25,8 @@ public class MyCaseDto {
 
 
     @Builder
-    public MyCaseDto(Long case_id,String case_detail, String desc, String article_url, CaseType caseType, Boolean case_exists, String raw_case, List<Long> word_ref){
-        this.case_id = case_id;
+    public MyCaseDto(Long caseId,String case_detail, String desc, String article_url, CaseType caseType, Boolean case_exists, String raw_case, List<Long> word_ref){
+        this.caseId = caseId;
         this.case_detail = case_detail;
         this.desc = desc;
         this.article_url = article_url;

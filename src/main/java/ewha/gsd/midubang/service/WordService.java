@@ -28,10 +28,10 @@ public class WordService {
     private final MemberWordRepository memberWordRepository;
 
     @Transactional
-    public MemberWord addWord(Long member_id, Long word_id){
-        Member member = memberRepository.findById(member_id).orElseThrow(()-> new ApiRequestException("user not found"));
-        if(!wordRepository.exitsInMyDict(member_id, word_id)){
-            Word word = wordRepository.findWordById(word_id);
+    public MemberWord addWord(Long memberId, Long wordId){
+        Member member = memberRepository.findById(memberId).orElseThrow(()-> new ApiRequestException("user not found"));
+        if(!wordRepository.exitsInMyDict(memberId, wordId)){
+            Word word = wordRepository.findWordById(wordId);
             if(word==null){
                 throw new ApiRequestException("존재하지 않는 단어 id");
             }
@@ -52,20 +52,20 @@ public class WordService {
     }
 
     @Transactional
-    public void deleteWord(Long member_id, Long word_id){
-        Member member = memberRepository.findById(member_id).orElseThrow(()-> new ApiRequestException("user not found"));
-        wordRepository.deleteWord(member_id, word_id);
+    public void deleteWord(Long memberId, Long wordId){
+        Member member = memberRepository.findById(memberId).orElseThrow(()-> new ApiRequestException("user not found"));
+        wordRepository.deleteWord(memberId, wordId);
     }
     @Transactional(readOnly = true)
-    public Page<SimpleWordDto> getWordList(Long member_id, Pageable pageable){
+    public Page<SimpleWordDto> getWordList(Long memberId, Pageable pageable){
         Page<Word> allWords = wordRepository.findAll(pageable);
-        Page<SimpleWordDto> wordList = allWords.map(word -> new SimpleWordDto(word, wordRepository.exitsInMyDict(member_id,word.getWord_id())));
+        Page<SimpleWordDto> wordList = allWords.map(word -> new SimpleWordDto(word, wordRepository.exitsInMyDict(memberId,word.getWordId())));
         return wordList;
     }
     @Transactional(readOnly = true)
 
-    public Page<WordDto> getMyWordList(Long member_id, Pageable pageable){
-        Page<MemberWord> allWords  = wordRepository.findAllByMemberId(member_id, pageable);
+    public Page<WordDto> getMyWordList(Long memberId, Pageable pageable){
+        Page<MemberWord> allWords  = wordRepository.findAllByMemberId(memberId, pageable);
         Page<WordDto> myWordList = allWords.map(WordDto::new);
 
         return myWordList;
@@ -73,8 +73,8 @@ public class WordService {
     }
     @Transactional(readOnly = true)
 
-    public WordDto getWord(Long member_id, Long word_id){
-        MemberWord memberWord = wordRepository.findMyWord(member_id, word_id);
+    public WordDto getWord(Long memberId, Long wordId){
+        MemberWord memberWord = wordRepository.findMyWord(memberId, wordId);
         if(memberWord==null){
             throw new ApiRequestException("word not exist");
         }
@@ -82,12 +82,12 @@ public class WordService {
     }
     @Transactional(readOnly = true)
 
-    public SimpleWordDto getAWord(Long word_id, Long member_id){
-        Word aWord = wordRepository.findWordById(word_id);
+    public SimpleWordDto getAWord(Long wordId, Long memberId){
+        Word aWord = wordRepository.findWordById(wordId);
         if(aWord==null){
             throw new ApiRequestException("word not exist");
         }
-        if(wordRepository.exitsInMyDict(member_id, word_id)){
+        if(wordRepository.exitsInMyDict(memberId, wordId)){
             return new SimpleWordDto(aWord,true);
         }else{
             return new SimpleWordDto(aWord, false);

@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 public class RecordSimpleResDto {
-    private Long record_id;
+    private Long recordId;
     private ContractType contract_type;
     private Boolean is_expensive;
     private Integer commission;
@@ -23,7 +23,7 @@ public class RecordSimpleResDto {
     private LocalDate record_date;
 
     public  RecordSimpleResDto(Record record){
-        this.record_id = record.getRecord_id();
+        this.recordId = record.getRecordId();
         this.contract_type = record.getContract_type();
         this.is_expensive = record.getIs_expensive();
         this.commission = record.getCommission();

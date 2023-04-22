@@ -35,8 +35,8 @@ public class AnalysisService {
     private final RecordRepository recordRepository;
     private final WordRepositoryImpl wordRepositoryImpl;
 
-    public Long saveRecord(Long user_id, RecordReqDto recordReqDto){
-        Member member = memberRepository.findById(user_id).orElseThrow(()-> new ApiRequestException("user not found"));
+    public Long saveRecord(Long userId, RecordReqDto recordReqDto){
+        Member member = memberRepository.findById(userId).orElseThrow(()-> new ApiRequestException("user not found"));
         LocalDate today = LocalDate.now();
         Record record = Record.builder()
                 .is_expensive(recordReqDto.getIs_expensive())
@@ -79,14 +79,14 @@ public class AnalysisService {
             recordCaseRepository.save(recordCase);
         }
 
-        return record.getRecord_id();
+        return record.getRecordId();
 
     }
 
 
 
-    public RecordListResDto getRecordList(Long member_id){
-        List<Record> recordList = recordRepository.findRecordListByMemberId(member_id);
+    public RecordListResDto getRecordList(Long memberId){
+        List<Record> recordList = recordRepository.findRecordListByMemberId(memberId);
         List<RecordSimpleResDto> simpleRecordList = recordList.stream().map(h -> new RecordSimpleResDto(h)).collect(Collectors.toList());
 
         RecordListResDto result = new RecordListResDto(simpleRecordList);
@@ -96,24 +96,24 @@ public class AnalysisService {
         return result;
     }
 
-    public RecordResDto getRecord(Long record_id){
-        Record record = recordRepository.findRecordById(record_id);
+    public RecordResDto getRecord(Long recordId){
+        Record record = recordRepository.findRecordById(recordId);
         RecordDetailsDto recordDetailsDto = RecordDetailsDto.builder()
                 .record(record)
                 .build();
 
         if(record==null){
-            throw new ApiRequestException("record_id not exist");
+            throw new ApiRequestException("recordId not exist");
         }
-        List<Tuple> caseList = recordCaseRepository.findAllRecordCasesById(record_id);
+        List<Tuple> caseList = recordCaseRepository.findAllRecordCasesById(recordId);
         RecordResDto recordResDto = makeRecordResDto(recordDetailsDto, caseList);
 
         return recordResDto;
     }
 
-    public void deleteRecord(Long record_id){
-        recordCaseRepository.deleteRecordCase(record_id);
-        recordRepository.deleteRecord(record_id);
+    public void deleteRecord(Long recordId){
+        recordCaseRepository.deleteRecordCase(recordId);
+        recordRepository.deleteRecord(recordId);
 
     }
 
@@ -135,7 +135,7 @@ public class AnalysisService {
             List<Long> noList = strToLongList(str);
             wordList.addAll(noList);
             MyCaseDto myCaseDto = MyCaseDto.builder()
-                    .case_id(t.get(recordCase.aCase.id))
+                    .caseId(t.get(recordCase.aCase.id))
                     .case_detail(t.get(recordCase.aCase.case_detail))
                     .desc(t.get(recordCase.aCase.desc))
                     .article_url(t.get(recordCase.aCase.article_url))
@@ -153,7 +153,7 @@ public class AnalysisService {
         List<SimpleWordDto> simpleWordDtoList = wordRepositoryImpl.findWordsById(newList).stream()
                 .map(SimpleWordDto::new).collect(Collectors.toList());
 
-        simpleWordDtoList.stream().sorted(Comparator.comparing(SimpleWordDto::getWord_id)).collect(Collectors.toList());
+        simpleWordDtoList.stream().sorted(Comparator.comparing(SimpleWordDto::getWordId)).collect(Collectors.toList());
 
         return new RecordResDto(record, myCaseDtoList, simpleWordDtoList);
     }

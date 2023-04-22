@@ -38,8 +38,8 @@ public class AnalysisController {
     @PostMapping("")
     public ResponseEntity<RecordResDto> saveRecord(HttpServletRequest request, @RequestBody RecordReqDto recordReqDto){
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        Long record_id = analysisService.saveRecord(userInfoDto.getMember_id(), recordReqDto );
-        RecordResDto recordResDto = analysisService.getRecord(record_id);
+        Long recordId = analysisService.saveRecord(userInfoDto.getMemberId(), recordReqDto );
+        RecordResDto recordResDto = analysisService.getRecord(recordId);
         return ResponseEntity.status(HttpStatus.OK).body(recordResDto);
 
     }
@@ -48,22 +48,22 @@ public class AnalysisController {
     @GetMapping("/list")
     public ResponseEntity<RecordListResDto> getRecordList(HttpServletRequest request){
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        RecordListResDto result = analysisService.getRecordList(userInfoDto.getMember_id());
+        RecordListResDto result = analysisService.getRecordList(userInfoDto.getMemberId());
         return ResponseEntity.status(HttpStatus.OK).body(result);
 
     }
 
     //특정한 특약 레코드 가져오기
     @GetMapping("")
-    public ResponseEntity<RecordResDto> getRecord(@RequestParam Long record_id){
-        RecordResDto recordResDto = analysisService.getRecord(record_id);
+    public ResponseEntity<RecordResDto> getRecord(@RequestParam Long recordId){
+        RecordResDto recordResDto = analysisService.getRecord(recordId);
         return ResponseEntity.status(HttpStatus.OK).body(recordResDto);
     }
 
     //특약 삭제
     @DeleteMapping("")
-    public ResponseEntity<Objects> deleteRecord(@RequestParam Long record_id){
-        analysisService.deleteRecord(record_id);
+    public ResponseEntity<Objects> deleteRecord(@RequestParam Long recordId){
+        analysisService.deleteRecord(recordId);
         return ResponseEntity.ok().build();
     }
 }

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class WordDto {
-    private Long word_id;
+    private Long wordId;
     private String word;
     private String meaning;
 
@@ -20,7 +20,7 @@ public class WordDto {
 
     @Builder
     public WordDto(MemberWord memberWord){
-        this.word_id = memberWord.getWord().getWord_id();
+        this.wordId = memberWord.getWord().getWordId();
         this.word = memberWord.getWord().getWord();
         this.meaning = memberWord.getWord().getMeaning();
         this.word_date = memberWord.getWord_date();

@@ -10,7 +10,7 @@ import javax.persistence.Enumerated;
 
 @Getter
 public class RecordDetailsDto {
-    private Long record_id;
+    private Long recordId;
     private Boolean is_expensive;
     private Integer commission;
     private Integer answer_commission;
@@ -19,7 +19,7 @@ public class RecordDetailsDto {
 
     @Builder
     public RecordDetailsDto(Record record) {
-        this.record_id = record.getRecord_id();
+        this.recordId = record.getRecordId();
         this.is_expensive = record.getIs_expensive();
         this.commission = record.getCommission();
         this.answer_commission = record.getAnswer_commission();
