@@ -25,7 +25,7 @@ public class ChecklistController {
     /* 체크리스트 항목 check */
     @PostMapping("/{checklistId}")
     public ResponseEntity saveChecklist(HttpServletRequest request, @PathVariable Integer checklistId) {
-        Long memberId = tokenProvider.getUserInfoByRequest(request).getMember_id();
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
         if (!checklistService.saveChecklist(memberId, checklistId)) {
             return ResponseEntity.ok(
                     new Message(HttpStatus.CONFLICT,
@@ -41,7 +41,7 @@ public class ChecklistController {
     /* 체크리스트 항목 check 해제 */
     @DeleteMapping("/{checklistId}")
     public ResponseEntity deleteChecklist(HttpServletRequest request, @PathVariable Integer checklistId) {
-        Long memberId = tokenProvider.getUserInfoByRequest(request).getMember_id();
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
         if (!checklistService.deleteChecklist(memberId, checklistId)) {
             return ResponseEntity.ok(
                     new Message(HttpStatus.NOT_FOUND,
@@ -57,7 +57,7 @@ public class ChecklistController {
     /* 유저의 체크 항목 불러오기 */
     @GetMapping("/all")
     public ResponseEntity getAllChecklist(HttpServletRequest request) {
-        Long memberId = tokenProvider.getUserInfoByRequest(request).getMember_id();
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
         return ResponseEntity.ok(
                 new ChecklistDto(
                         HttpStatus.OK,
