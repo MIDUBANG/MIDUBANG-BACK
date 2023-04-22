@@ -98,13 +98,14 @@ public class AnalysisService {
 
     public RecordResDto getRecord(Long recordId){
         Record record = recordRepository.findRecordById(recordId);
+        if(record==null){
+            throw new ApiRequestException("recordId not exist");
+        }
         RecordDetailsDto recordDetailsDto = RecordDetailsDto.builder()
                 .record(record)
                 .build();
 
-        if(record==null){
-            throw new ApiRequestException("recordId not exist");
-        }
+
         List<Tuple> caseList = recordCaseRepository.findAllRecordCasesById(recordId);
         RecordResDto recordResDto = makeRecordResDto(recordDetailsDto, caseList);
 
