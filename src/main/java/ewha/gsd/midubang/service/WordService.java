@@ -57,9 +57,9 @@ public class WordService {
         wordRepository.deleteWord(member_id, word_id);
     }
     @Transactional(readOnly = true)
-    public Page<SimpleWordDto> getWordList(Pageable pageable){
+    public Page<SimpleWordDto> getWordList(Long member_id, Pageable pageable){
         Page<Word> allWords = wordRepository.findAll(pageable);
-        Page<SimpleWordDto> wordList = allWords.map(SimpleWordDto::new);
+        Page<SimpleWordDto> wordList = allWords.map(word -> new SimpleWordDto(word, wordRepository.exitsInMyDict(member_id,word.getWord_id())));
         return wordList;
     }
     @Transactional(readOnly = true)

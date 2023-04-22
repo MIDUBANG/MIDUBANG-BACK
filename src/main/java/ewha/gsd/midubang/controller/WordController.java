@@ -54,8 +54,9 @@ public class WordController {
     }
     //전체 단어 리스트 조회
     @GetMapping("/word/list")
-    public ResponseEntity<Page<SimpleWordDto>> getWordList(@PageableDefault Pageable pageable){
-        Page<SimpleWordDto> wordList = wordService.getWordList(pageable);
+    public ResponseEntity<Page<SimpleWordDto>> getWordList(HttpServletRequest request, @PageableDefault Pageable pageable){
+        UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
+        Page<SimpleWordDto> wordList = wordService.getWordList(userInfoDto.getMember_id(),pageable);
         return ResponseEntity.status(HttpStatus.OK).body(wordList);
     }
 
