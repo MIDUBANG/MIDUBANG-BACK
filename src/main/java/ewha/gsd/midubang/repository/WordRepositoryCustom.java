@@ -8,10 +8,10 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface WordRepositoryCustom {
-    boolean exitsInMyDict(Long member_id, Long word_id);
-    Word findWordById(Long word_id);
-    void deleteWord(Long member_id, Long word_id);
-    Page<MemberWord> findAllByMemberId(Long member_id, Pageable pageable);
-    MemberWord findMyWord(Long member_id, Long word_id);
+    boolean exitsInMyDict(Long memberId, Long wordId);
+    Word findWordById(Long wordId);
+    void deleteWord(Long memberId, Long wordId);
+    Page<MemberWord> findAllByMemberId(Long memberId, Pageable pageable);
+    MemberWord findMyWord(Long memberId, Long wordId);
     List<Word> findWordsById(List<Long> ids);
 }

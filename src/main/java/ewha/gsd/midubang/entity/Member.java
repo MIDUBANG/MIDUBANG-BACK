@@ -15,7 +15,8 @@ import java.util.List;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long member_id;
+    @Column(name = "member_id")
+    private Long memberId;
 
     @Column(length = 50, unique = true)
     private String email;

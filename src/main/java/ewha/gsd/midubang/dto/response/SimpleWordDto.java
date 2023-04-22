@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class SimpleWordDto {
-    private  Long word_id;
+    private  Long wordId;
     private String word;
     private String meaning;
 
@@ -19,7 +19,7 @@ public class SimpleWordDto {
 
     @Builder
     public SimpleWordDto(Word word, Boolean isSaved){
-        this.word_id = word.getWord_id();
+        this.wordId = word.getWordId();
         this.word = word.getWord();
         this.meaning = word.getMeaning();
         this.isSaved = isSaved;
@@ -28,7 +28,7 @@ public class SimpleWordDto {
 
     @Builder
     public SimpleWordDto(Word word){
-        this.word_id=word.getWord_id();
+        this.wordId=word.getWordId();
         this.word = word.getWord();
         this.meaning = word.getMeaning();
 

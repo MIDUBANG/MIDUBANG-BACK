@@ -49,13 +49,13 @@ public class MemberService {
     public TokenDTO joinJwtToken(String email) throws IOException, ServletException {
         Member member = memberRepository.findByEmail(email);
         String refreshToken = redisDao.getValues(email);
-        log.info(String.valueOf(member.getMember_id()), member.getEmail());
+        log.info(String.valueOf(member.getMemberId()), member.getEmail());
 
         //refresh token이 아직 없으면 새롭게 access, refresh token 발급
         if(refreshToken==null){
             log.info("refresh token is null");
             //access,refresh token 생성 + Redis에 refresh token 저장
-            TokenDTO tokenDTO = tokenProvider.createToken(member.getMember_id(), member.getEmail());
+            TokenDTO tokenDTO = tokenProvider.createToken(member.getMemberId(), member.getEmail());
 
             return tokenDTO;
 
@@ -68,7 +68,7 @@ public class MemberService {
                 return new TokenDTO("Bearer",accessToken, ACCESS_TOKEN_EXPIRE_TIME, refreshToken);
             }
             else{ //accessToken이 무효(return null)하면 새로운 access, refresh token 생성
-                TokenDTO new_tokenDTO = tokenProvider.createToken(member.getMember_id(), member.getEmail());
+                TokenDTO new_tokenDTO = tokenProvider.createToken(member.getMemberId(), member.getEmail());
                 return new_tokenDTO;
             }
         }
@@ -96,7 +96,7 @@ public class MemberService {
         log.info("96 : " + userInfoDto);
         //refresh token의 유효기간이 아직 만료되지 않았으면 새로 생성한 accessToken 값이 들어감
         if(isSameRefreshToken(userInfoDto, refreshToken)){
-            String accessToken = tokenProvider.reissueAccessToken(userInfoDto.getMember_id(), userInfoDto.getEmail());
+            String accessToken = tokenProvider.reissueAccessToken(userInfoDto.getMemberId(), userInfoDto.getEmail());
             if(accessToken!=null){
                 return new TokenDTO("Bearer",accessToken, ACCESS_TOKEN_EXPIRE_TIME, refreshToken);
             }

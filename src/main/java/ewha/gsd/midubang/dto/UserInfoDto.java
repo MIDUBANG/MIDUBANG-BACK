@@ -10,12 +10,12 @@ import java.util.Collection;
 
 @Getter
 public class UserInfoDto implements UserDetails {
-    private Long member_id;
+    private Long memberId;
     private String email;
 
     @Builder
     public UserInfoDto(Member member){
-        this.member_id = member.getMember_id();
+        this.memberId = member.getMemberId();
         this.email = member.getEmail();
     }
 

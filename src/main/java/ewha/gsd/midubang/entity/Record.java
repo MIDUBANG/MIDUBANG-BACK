@@ -18,7 +18,7 @@ public class Record {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="record_id")
-    private Long record_id;
+    private Long recordId;
 
     private Boolean is_expensive;
     private Integer commission;

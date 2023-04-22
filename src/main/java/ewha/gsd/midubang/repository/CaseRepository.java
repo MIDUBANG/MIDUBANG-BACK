@@ -13,8 +13,8 @@ public class CaseRepository {
 
     private final EntityManager em;
 
-    public Case findCaseById(Long case_id){
-        return em.find(Case.class, case_id);
+    public Case findCaseById(Long caseId){
+        return em.find(Case.class, caseId);
 
     }
 

@@ -30,14 +30,14 @@ public class WordController {
 
 
 
-    @PostMapping("/word/{word_id}")
-    public ResponseEntity<MemberWordDto> saveWord(HttpServletRequest request, @PathVariable Long word_id){
+    @PostMapping("/word/{wordId}")
+    public ResponseEntity<MemberWordDto> saveWord(HttpServletRequest request, @PathVariable Long wordId){
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        MemberWord memberWord = wordService.addWord(userInfoDto.getMember_id(), word_id);
+        MemberWord memberWord = wordService.addWord(userInfoDto.getMemberId(), wordId);
 
         MemberWordDto memberWordDto = MemberWordDto.builder()
                 .email(userInfoDto.getEmail())
-                .word_id(memberWord.getWord().getWord_id())
+                .wordId(memberWord.getWord().getWordId())
                 .word(memberWord.getWord().getWord())
                 .meaning(memberWord.getWord().getMeaning())
                 .build();
@@ -45,10 +45,10 @@ public class WordController {
         return ResponseEntity.status(HttpStatus.OK).body(memberWordDto);
     }
 
-    @DeleteMapping("/word/{word_id}")
-    public ResponseEntity<Object> deleteWord(HttpServletRequest request, @PathVariable Long word_id){
+    @DeleteMapping("/word/{wordId}")
+    public ResponseEntity<Object> deleteWord(HttpServletRequest request, @PathVariable Long wordId){
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        wordService.deleteWord(userInfoDto.getMember_id(),word_id);
+        wordService.deleteWord(userInfoDto.getMemberId(),wordId);
 
         return ResponseEntity.ok().build();
     }
@@ -56,7 +56,7 @@ public class WordController {
     @GetMapping("/word/list")
     public ResponseEntity<Page<SimpleWordDto>> getWordList(HttpServletRequest request, @PageableDefault Pageable pageable){
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        Page<SimpleWordDto> wordList = wordService.getWordList(userInfoDto.getMember_id(),pageable);
+        Page<SimpleWordDto> wordList = wordService.getWordList(userInfoDto.getMemberId(),pageable);
         return ResponseEntity.status(HttpStatus.OK).body(wordList);
     }
 
@@ -64,24 +64,24 @@ public class WordController {
     @GetMapping("word/my/list")
     public ResponseEntity<Page<WordDto>> getMyWordList(HttpServletRequest request, @PageableDefault Pageable pageable ){
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        Page<WordDto> myWordList = wordService.getMyWordList(userInfoDto.getMember_id(), pageable);
+        Page<WordDto> myWordList = wordService.getMyWordList(userInfoDto.getMemberId(), pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(myWordList);
     }
 
     //저장된 단어 중 특정 단어 조회
-    @GetMapping("/word/my/{word_id}")
-    public ResponseEntity<WordDto> getMyWord(HttpServletRequest request, @PathVariable Long word_id){
+    @GetMapping("/word/my/{wordId}")
+    public ResponseEntity<WordDto> getMyWord(HttpServletRequest request, @PathVariable Long wordId){
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        WordDto wordDto = wordService.getWord(userInfoDto.getMember_id(), word_id);
+        WordDto wordDto = wordService.getWord(userInfoDto.getMemberId(), wordId);
         return ResponseEntity.status(HttpStatus.OK).body(wordDto);
     }
 
     //특정 단어 조회
-    @GetMapping("/word/{word_id}")
-    public ResponseEntity<SimpleWordDto> getAWord(HttpServletRequest request, @PathVariable Long word_id){
+    @GetMapping("/word/{wordId}")
+    public ResponseEntity<SimpleWordDto> getAWord(HttpServletRequest request, @PathVariable Long wordId){
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        SimpleWordDto simpleWordDto = wordService.getAWord(word_id, userInfoDto.getMember_id());
+        SimpleWordDto simpleWordDto = wordService.getAWord(wordId, userInfoDto.getMemberId());
         return ResponseEntity.status(HttpStatus.OK).body(simpleWordDto);
     }
 

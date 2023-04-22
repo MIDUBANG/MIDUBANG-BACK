@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class UserPrincipal implements UserDetails {
-    private Long member_id;
+    private Long memberId;
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
@@ -23,7 +23,7 @@ public class UserPrincipal implements UserDetails {
     public static UserPrincipal create(Member member) {
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("" + UserRole.CLIENT));
         return new UserPrincipal(
-                member.getMember_id(),
+                member.getMemberId(),
                 member.getEmail(),
                 member.getPassword(),
                 authorities

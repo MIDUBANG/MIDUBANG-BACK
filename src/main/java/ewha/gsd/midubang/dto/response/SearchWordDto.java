@@ -14,7 +14,7 @@ public class SearchWordDto {
     private String word;
 
     public SearchWordDto(Word word){
-        this.wordId = word.getWord_id();
+        this.wordId = word.getWordId();
         this.word= word.getWord();
     }
 }

@@ -41,7 +41,7 @@ public class RecordCaseRepository {
 
 
     @Transactional
-    public List<Tuple> findAllRecordCasesById(Long record_id){
+    public List<Tuple> findAllRecordCasesById(Long recordId){
         queryFactory = new JPAQueryFactory(em);
         List<Tuple> caseList = queryFactory
                 .select(
@@ -56,7 +56,7 @@ public class RecordCaseRepository {
                 )
                 .from(recordCase)
                 .leftJoin(recordCase.record, record)
-                .where(recordCase.record.record_id.eq(record_id))
+                .where(recordCase.record.recordId.eq(recordId))
                 .fetch();
 
         return caseList;
@@ -64,13 +64,13 @@ public class RecordCaseRepository {
     }
 
     @Transactional
-    public void deleteRecordCase(Long record_id){
+    public void deleteRecordCase(Long recordId){
         queryFactory = new JPAQueryFactory(em);
         long count = queryFactory.delete(recordCase)
-                .where(recordCase.record.record_id.eq(record_id))
+                .where(recordCase.record.recordId.eq(recordId))
                 .execute();
         if(count==0){
-            throw new ApiRequestException("record_id not exist");
+            throw new ApiRequestException("recordId not exist");
         }
     }
 

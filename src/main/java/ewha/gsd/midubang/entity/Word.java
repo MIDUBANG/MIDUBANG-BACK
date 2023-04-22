@@ -16,7 +16,7 @@ public class Word {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="word_id")
-    private Long word_id;
+    private Long wordId;
 
     @Column(length = 50)
     private String word;

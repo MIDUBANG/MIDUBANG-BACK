@@ -109,8 +109,8 @@ public class TokenProvider {
     public UserInfoDto getUserInfoByRequest(HttpServletRequest request){
         String token = resolveToken(request);
         if(validateTokenForUserInfo(token)){
-            Long member_id = Jwts.parserBuilder().setSigningKey(access_key).build().parseClaimsJws(token).getBody().get("id", Long.class);
-            Member member = memberRepository.findById(member_id).get();
+            Long memberId = Jwts.parserBuilder().setSigningKey(access_key).build().parseClaimsJws(token).getBody().get("id", Long.class);
+            Member member = memberRepository.findById(memberId).get();
             log.info("found member : "+ member);
             if(member==null){
                 throw new ApiRequestException("no user exists");
@@ -128,9 +128,9 @@ public class TokenProvider {
             Claims claims = Jwts.parserBuilder().setSigningKey(refresh_key).build().parseClaimsJws(refreshToken).getBody();
             log.info("claims:"+ claims);
 
-            Long member_id = claims.get("id", Long.class);
-            log.info("tokenprovider / member_id: " + member_id);
-            Member member = memberRepository.findById(member_id).get();
+            Long memberId = claims.get("id", Long.class);
+            log.info("tokenprovider / memberId: " + memberId);
+            Member member = memberRepository.findById(memberId).get();
 
             if (member == null) {
                 throw new ApiRequestException("가입되어 있지 않은 유저입니다.");
