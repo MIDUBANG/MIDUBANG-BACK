@@ -111,7 +111,6 @@ public class TokenProvider {
         if(validateTokenForUserInfo(token)){
             Long memberId = Jwts.parserBuilder().setSigningKey(access_key).build().parseClaimsJws(token).getBody().get("id", Long.class);
             Member member = memberRepository.findById(memberId).get();
-            log.info("found member : "+ member);
             if(member==null){
                 throw new ApiRequestException("no user exists");
             }
