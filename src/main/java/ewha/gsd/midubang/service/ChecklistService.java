@@ -9,6 +9,7 @@ import ewha.gsd.midubang.repository.CheckQuerydslRepository;
 import ewha.gsd.midubang.repository.CheckRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,18 +46,39 @@ public class ChecklistService {
         return true;
     }
 
-    /* 유저의 체크 항목 불러오기 */
+    /* 유저의 체크 항목 불러오기 (전체) */
     public List<Integer> getAllChecklist(Long memberId) {
-        List<Integer> list = checkQuerydslRepository.findChecklistIdByMemberId(memberId);
+        List<Integer> list = checkQuerydslRepository.findChecksByMemberId(memberId);
         return list;
     }
 
     /* 유저의 체크 항목 불러오기 (카테고리별) */
+    public List<Integer> getChecksByCategoryId(Long memberId, Integer categoryId) {
+        List<Integer> userCheck = checkQuerydslRepository.findChecksByMemberIdAndCategoryId(memberId, categoryId);
+        return userCheck;
+    }
 
     /* 체크리스트 가져오기 (카테고리별) + 체크 여부 */
-    public ChecklistResponseDto getChecklistByCategory(Long memberId, Integer categoryId) {
-        List<ChecklistDto> list = checkQuerydslRepository.findChecklistByCategoryId(categoryId);
-
-        return null;
+    public ChecklistResponseDto getChecklistByCategoryId(Long memberId, Integer categoryId) {
+        List<ChecklistDto> checklist = checkQuerydslRepository.findChecklistByCategoryId(categoryId);
+        List<Integer> userCheck = checkQuerydslRepository.findChecksByMemberIdAndCategoryId(memberId, categoryId);
+        ChecklistResponseDto response = new ChecklistResponseDto(
+                HttpStatus.OK,
+                categoryId,
+                checklist,
+                userCheck
+        );
+        return response;
     }
+
+    /* 유저의 체크 항목 개수 가져오기 (전체) */
+    public Integer getAllCheckCount(Long memberId) {
+        return checkQuerydslRepository.getAllCountByMemberId(memberId);
+    }
+
+    /* 유저의 체크 항목 개수 가져오기 (카테고리별) */
+    public Integer getCheckCountByCategoryId(Long memberId, Integer categoryId) {
+        return checkQuerydslRepository.getCountByMemberIdAndCategoryId(memberId, categoryId);
+    }
+
 }
