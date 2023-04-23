@@ -11,5 +11,13 @@ public class ChecklistResponseDto {
     private HttpStatus httpStatus;
     private Integer categoryId;
     private List<ChecklistDto> checklist;
-    private List<Integer> isCheck;
+    private List<Integer> userCheck;
+
+    public ChecklistResponseDto(HttpStatus httpStatus, Integer categoryId,
+                                List<ChecklistDto> checklist, List<Integer> userCheck) {
+        this.httpStatus = httpStatus;
+        this.categoryId = categoryId;
+        this.checklist = checklist;
+        this.userCheck = userCheck;
+    }
 }
