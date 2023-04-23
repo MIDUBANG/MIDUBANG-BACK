@@ -138,7 +138,7 @@ public class AnalysisService {
             MyCaseDto myCaseDto = MyCaseDto.builder()
                     .caseId(t.get(recordCase.aCase.id))
                     .case_detail(t.get(recordCase.aCase.case_detail))
-                    .desc(t.get(recordCase.aCase.desc))
+                    .desc(t.get(recordCase.aCase.description))
                     .article_url(t.get(recordCase.aCase.article_url))
                     .caseType(t.get(recordCase.aCase.type))
                     .case_exists(t.get(recordCase.case_exists))
