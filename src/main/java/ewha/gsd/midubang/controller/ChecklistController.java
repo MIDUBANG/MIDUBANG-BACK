@@ -1,12 +1,11 @@
 package ewha.gsd.midubang.controller;
 
 import ewha.gsd.midubang.dto.Message;
-import ewha.gsd.midubang.dto.response.ChecklistDto;
+import ewha.gsd.midubang.dto.response.ChecklistAllDto;
 import ewha.gsd.midubang.jwt.TokenProvider;
 import ewha.gsd.midubang.service.ChecklistService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,15 +53,24 @@ public class ChecklistController {
         );
     }
 
-    /* 유저의 체크 항목 불러오기 */
+    /* 유저의 체크 항목 불러오기 (전체) */
     @GetMapping("/all")
     public ResponseEntity getAllChecklist(HttpServletRequest request) {
         Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
         return ResponseEntity.ok(
-                new ChecklistDto(
+                new ChecklistAllDto(
                         HttpStatus.OK,
                         checklistService.getAllChecklist(memberId)
                 )
         );
+    }
+
+    /* 유저의 체크 항목 불러오기 (카테고리별) */
+
+    /* 체크리스트 가져오기 (카테고리별) + 체크 여부 */
+    @GetMapping("/{categoryId}")
+    public ResponseEntity getChecklistByCategory(HttpServletRequest request, @PathVariable Integer categoryId) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        return null;
     }
 }
