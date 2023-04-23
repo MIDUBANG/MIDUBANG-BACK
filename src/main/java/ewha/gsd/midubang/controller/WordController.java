@@ -1,5 +1,6 @@
 package ewha.gsd.midubang.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import ewha.gsd.midubang.dto.MemberWordDto;
 import ewha.gsd.midubang.dto.UserInfoDto;
 import ewha.gsd.midubang.dto.response.*;
@@ -71,18 +72,25 @@ public class WordController {
 
     //저장된 단어 중 특정 단어 조회
     @GetMapping("/word/my/{wordId}")
-    public ResponseEntity<WordDto> getMyWord(HttpServletRequest request, @PathVariable Long wordId){
+    public ResponseEntity<MyWordResDto> getMyWord(HttpServletRequest request, @PathVariable Long wordId) throws JsonProcessingException {
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        WordDto wordDto = wordService.getWord(userInfoDto.getMemberId(), wordId);
+        MyWordResDto wordDto = wordService.getWord(userInfoDto.getMemberId(), wordId);
         return ResponseEntity.status(HttpStatus.OK).body(wordDto);
+    }
+
+    @GetMapping("/word/test")
+    public NaverWordDto naverapitest(@RequestParam String keyword) throws JsonProcessingException {
+        String url = "https://terms.naver.com/entry.naver?docId=300039&cid=43665&categoryId=43665";
+        return wordService.getNaverSearch(keyword);
+//        return wordService.crawlingDesc(url);
     }
 
     //특정 단어 조회
     @GetMapping("/word/{wordId}")
-    public ResponseEntity<SimpleWordDto> getAWord(HttpServletRequest request, @PathVariable Long wordId){
+    public ResponseEntity<WordResDto> getAWord(HttpServletRequest request, @PathVariable Long wordId) throws JsonProcessingException {
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequest(request);
-        SimpleWordDto simpleWordDto = wordService.getAWord(wordId, userInfoDto.getMemberId());
-        return ResponseEntity.status(HttpStatus.OK).body(simpleWordDto);
+        WordResDto wordResDto = wordService.getAWord(wordId, userInfoDto.getMemberId());
+        return ResponseEntity.status(HttpStatus.OK).body(wordResDto);
     }
 
     //단어 검색
