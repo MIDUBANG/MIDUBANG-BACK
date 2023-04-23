@@ -1,12 +1,12 @@
 package ewha.gsd.midubang.controller;
 
 import ewha.gsd.midubang.dto.Message;
-import ewha.gsd.midubang.dto.response.ChecklistDto;
+import ewha.gsd.midubang.dto.response.CheckCountResponseDto;
+import ewha.gsd.midubang.dto.response.ChecksResponseDto;
 import ewha.gsd.midubang.jwt.TokenProvider;
 import ewha.gsd.midubang.service.ChecklistService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,14 +54,57 @@ public class ChecklistController {
         );
     }
 
-    /* 유저의 체크 항목 불러오기 */
-    @GetMapping("/all")
+    /* 유저의 체크 항목 불러오기 (전체) */
+    @GetMapping("/all/check")
     public ResponseEntity getAllChecklist(HttpServletRequest request) {
         Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
         return ResponseEntity.ok(
-                new ChecklistDto(
+                new ChecksResponseDto(
                         HttpStatus.OK,
                         checklistService.getAllChecklist(memberId)
+                )
+        );
+    }
+
+    /* 유저의 체크 항목 불러오기 (카테고리별) */
+    @GetMapping("/{categoryId}/check")
+    public ResponseEntity getChecksByCategoryId(HttpServletRequest request, @PathVariable Integer categoryId) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        return ResponseEntity.ok(
+                new ChecksResponseDto(
+                        HttpStatus.OK,
+                        checklistService.getChecksByCategoryId(memberId, categoryId)
+                )
+        );
+    }
+
+    /* 체크리스트 가져오기 (카테고리별) + 체크 여부 */
+    @GetMapping("/{categoryId}")
+    public ResponseEntity getChecklistByCategoryId(HttpServletRequest request, @PathVariable Integer categoryId) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        return ResponseEntity.ok(checklistService.getChecklistByCategoryId(memberId, categoryId));
+    }
+
+    /* 유저의 체크 항목 개수 가져오기 (전체) */
+    @GetMapping("/count")
+    public ResponseEntity getAllCheckCount(HttpServletRequest request) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        return ResponseEntity.ok(
+                new CheckCountResponseDto(
+                        HttpStatus.OK,
+                        checklistService.getAllCheckCount(memberId)
+                )
+        );
+    }
+
+    /* 유저의 체크 항목 개수 가져오기 (카테고리별) */
+    @GetMapping("/count/{categoryId}")
+    public ResponseEntity getCheckCountByCategoryId(HttpServletRequest request, @PathVariable Integer categoryId) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        return ResponseEntity.ok(
+                new CheckCountResponseDto(
+                        HttpStatus.OK,
+                        checklistService.getCheckCountByCategoryId(memberId, categoryId)
                 )
         );
     }

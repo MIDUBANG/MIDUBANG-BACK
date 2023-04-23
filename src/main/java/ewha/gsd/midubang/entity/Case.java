@@ -22,7 +22,7 @@ public class Case {
 
     private String case_detail;
 
-    private String desc;
+    private String description;
     private String article_url;
 
     @Enumerated(EnumType.STRING)
@@ -32,9 +32,9 @@ public class Case {
 
 
     @Builder
-    public Case(String case_detail, String desc, String article_url, CaseType type, String word_ref ){
+    public Case(String case_detail, String description, String article_url, CaseType type, String word_ref ){
         this.case_detail = case_detail;
-        this.desc = desc;
+        this.description = description;
         this.article_url = article_url;
         this.type = type;
         this.word_ref = word_ref;

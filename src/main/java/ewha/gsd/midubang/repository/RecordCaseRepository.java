@@ -47,7 +47,7 @@ public class RecordCaseRepository {
                 .select(
                         recordCase.aCase.id,
                         recordCase.aCase.case_detail,
-                        recordCase.aCase.desc,
+                        recordCase.aCase.description,
                         recordCase.aCase.article_url,
                         recordCase.aCase.type,
                         recordCase.case_exists,
