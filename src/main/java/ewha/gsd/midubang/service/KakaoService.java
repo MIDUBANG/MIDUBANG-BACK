@@ -33,7 +33,7 @@ public class KakaoService {
     private String GRANT_TYPE;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-    private String CLIENTId;
+    private String CLIENTID;
 
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String REDIRECT_URI;
@@ -53,7 +53,7 @@ public class KakaoService {
     public KakaoToken getAccessToken(String code) throws JsonProcessingException {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", GRANT_TYPE);
-        params.add("clientId", CLIENTId);
+        params.add("client_id", CLIENTID);
         params.add("redirect_uri", REDIRECT_URI);
         params.add("code", code);
         params.add("client_secret", CLIENT_SECRET);
