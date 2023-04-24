@@ -56,10 +56,20 @@ public class CommunityController {
     }
 
     /* 금쪽이 글 상세 조회 */
-
+    @GetMapping("/post/{postId}")
+    public ResponseEntity getPostDetail(@PathVariable Long postId) {
+        return ResponseEntity.ok(
+                communityService.getPostDetail(postId)
+        );
+    }
 
     /* 금쪽이 글 목록 조회 */
-
+    @GetMapping("/post/all")
+    public ResponseEntity getAllPostList() {
+        return ResponseEntity.ok(
+                communityService.getAllPostList()
+        );
+    }
 
     /* 금쪽이 댓글 작성 */
     @PostMapping("/post/{postId}/comment")

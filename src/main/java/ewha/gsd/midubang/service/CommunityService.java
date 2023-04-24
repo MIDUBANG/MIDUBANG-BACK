@@ -1,5 +1,7 @@
 package ewha.gsd.midubang.service;
 
+import ewha.gsd.midubang.dto.PostDetailDto;
+import ewha.gsd.midubang.dto.PostListDto;
 import ewha.gsd.midubang.dto.request.CommentRequestDto;
 import ewha.gsd.midubang.dto.request.PostRequestDto;
 import ewha.gsd.midubang.entity.Comment;
@@ -17,6 +19,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -58,10 +61,14 @@ public class CommunityService {
     }
 
     /* 금쪽이 글 상세 조회 */
-
+    public PostDetailDto getPostDetail(Long postId) {
+        return postQuerydslRepository.findPostDetailByPostId(postId);
+    }
 
     /* 금쪽이 글 목록 조회 */
-
+    public List<PostListDto> getAllPostList() {
+        return postQuerydslRepository.findAllPosts();
+    }
 
     /* 금쪽이 댓글 작성 */
     public Long createComment(Long postId, Long memberId, CommentRequestDto request) {
