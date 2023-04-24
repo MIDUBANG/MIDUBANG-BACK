@@ -1,4 +1,4 @@
-package ewha.gsd.midubang.dto.response;
+package ewha.gsd.midubang.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Data
 @AllArgsConstructor
-public class PostResponseDto {
+public class IdDto {
     private HttpStatus httpStatus;
-    private Long postId;
+    private Long id;
 }

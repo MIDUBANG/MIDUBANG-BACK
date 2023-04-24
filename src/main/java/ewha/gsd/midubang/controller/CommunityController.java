@@ -1,13 +1,13 @@
 package ewha.gsd.midubang.controller;
 
 import ewha.gsd.midubang.dto.Message;
+import ewha.gsd.midubang.dto.request.CommentRequestDto;
 import ewha.gsd.midubang.dto.request.PostRequestDto;
-import ewha.gsd.midubang.dto.response.PostResponseDto;
+import ewha.gsd.midubang.dto.IdDto;
 import ewha.gsd.midubang.jwt.TokenProvider;
 import ewha.gsd.midubang.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +28,7 @@ public class CommunityController {
     public ResponseEntity createPost(HttpServletRequest request, @RequestBody PostRequestDto requestDto) {
         Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
         return ResponseEntity.ok(
-                new PostResponseDto(
+                new IdDto(
                         HttpStatus.OK,
                         communityService.createPost(memberId, requestDto)
                 )
@@ -55,13 +55,46 @@ public class CommunityController {
         );
     }
 
+    /* 금쪽이 글 상세 조회 */
+
+
     /* 금쪽이 글 목록 조회 */
 
 
     /* 금쪽이 댓글 작성 */
-
+    @PostMapping("/post/{postId}/comment")
+    public ResponseEntity createComment(HttpServletRequest request,
+                                        @PathVariable Long postId, @RequestBody CommentRequestDto requestDto) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        return ResponseEntity.ok(
+                new IdDto(
+                        HttpStatus.OK,
+                        communityService.createComment(postId, memberId, requestDto)
+                )
+        );
+    }
 
     /* 금쪽이 댓글 삭제 */
+    @DeleteMapping("/post/comment/{commentId}")
+    public ResponseEntity deleteComment(HttpServletRequest request, @PathVariable Long commentId) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        if (!communityService.deleteComment(memberId, commentId)) {
+            return ResponseEntity.ok(
+                    new Message(
+                            HttpStatus.FORBIDDEN,
+                            "작성자만 삭제할 수 있습니다."
+                    )
+            );
+        }
+        return ResponseEntity.ok(
+                new Message(
+                        HttpStatus.OK,
+                        "삭제 성공"
+                )
+        );
+    }
+
+    /* 챗쪽이 글 상세 조회 */
 
 
     /* 챗쪽이 글 목록 조회 */
