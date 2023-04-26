@@ -3,6 +3,7 @@ package ewha.gsd.midubang.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import ewha.gsd.midubang.dto.ChecklistDto;
+import ewha.gsd.midubang.entity.Check;
 import ewha.gsd.midubang.entity.ChecklistContent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -34,7 +35,7 @@ public class CheckQuerydslRepository {
     }
 
     @Transactional(readOnly = true)
-    public List<Integer> findChecksByMemberIdAndCategoryId(Long memberId, Integer categoryId) {
+    public List<Integer> findAllCheckIdByMemberIdAndCategoryId(Long memberId, Integer categoryId) {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(em);
 
         return jpaQueryFactory
@@ -107,4 +108,16 @@ public class CheckQuerydslRepository {
                 .from(check)
                 .fetchFirst());
     }
+
+    @Transactional(readOnly = true)
+    public List<Check> findAllCheckByMemberIdAndCategoryId(Long memberId, Integer categoryId) {
+        JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(em);
+
+        return jpaQueryFactory
+                .selectFrom(check)
+                .where(check.memberId.eq(memberId)
+                        .and(check.checklistContent.categoryId.categoryId.eq(categoryId)))
+                .fetch();
+    }
+
 }

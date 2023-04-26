@@ -108,4 +108,37 @@ public class ChecklistController {
                 )
         );
     }
+
+    /* 체크리스트 전체 체크 (카테고리 단위) */
+    @PostMapping("/category/{categoryId}")
+    public ResponseEntity saveAllCheckByCategory(HttpServletRequest request, @PathVariable Integer categoryId) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        if (!checklistService.saveAllCheckByCategory(memberId, categoryId)) {
+            return ResponseEntity.ok(
+                    new Message(HttpStatus.CONFLICT,
+                            "All data is already checked.")
+            );
+        }
+        return ResponseEntity.ok(
+                new Message(HttpStatus.OK,
+                        null)
+        );
+    }
+
+    /* 체크리스트 전체 체크 해제 (카테고리 단위) */
+    @DeleteMapping("/category/{categoryId}")
+    public ResponseEntity deleteAllCheckByCategory(HttpServletRequest request, @PathVariable Integer categoryId) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        if (!checklistService.deleteAllCheckByCategory(memberId, categoryId)) {
+            return ResponseEntity.ok(
+                    new Message(HttpStatus.NOT_FOUND,
+                            "No check data.")
+            );
+        }
+        return ResponseEntity.ok(
+                new Message(HttpStatus.OK,
+                        null)
+        );
+    }
+
 }
