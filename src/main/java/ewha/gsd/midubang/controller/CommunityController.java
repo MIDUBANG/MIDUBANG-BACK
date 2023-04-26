@@ -1,6 +1,7 @@
 package ewha.gsd.midubang.controller;
 
 import ewha.gsd.midubang.dto.Message;
+import ewha.gsd.midubang.dto.PostDetailDto;
 import ewha.gsd.midubang.dto.request.CommentRequestDto;
 import ewha.gsd.midubang.dto.request.PostRequestDto;
 import ewha.gsd.midubang.dto.IdDto;
@@ -58,8 +59,20 @@ public class CommunityController {
     /* 금쪽이 글 상세 조회 */
     @GetMapping("/post/{postId}")
     public ResponseEntity getPostDetail(@PathVariable Long postId) {
+
+        PostDetailDto body = communityService.getPostDetail(postId);
+
+        if (body == null) {
+            return ResponseEntity.ok(
+                    new Message(
+                            HttpStatus.NOT_FOUND,
+                            "The post does not exist."
+                    )
+            );
+        }
+
         return ResponseEntity.ok(
-                communityService.getPostDetail(postId)
+                body
         );
     }
 

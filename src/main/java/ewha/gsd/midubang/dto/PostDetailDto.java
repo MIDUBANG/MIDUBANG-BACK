@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostDetailDto {
+    private Long postId;
     private String writer;
     private String title;
     private String detail;

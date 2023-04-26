@@ -62,6 +62,11 @@ public class CommunityService {
 
     /* 금쪽이 글 상세 조회 */
     public PostDetailDto getPostDetail(Long postId) {
+
+        if (postRepository.findById(postId).orElse(null) == null) {
+            return null;
+        }
+
         return postQuerydslRepository.findPostDetailByPostId(postId);
     }
 

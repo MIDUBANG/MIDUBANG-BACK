@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostListDto {
+    private Long postId;
     private String writer;
     private String title;
+    private String content;
     private Integer numOfComments;
 }
