@@ -39,6 +39,4 @@ public class Post {
     @OrderBy("id asc")
     private List<Comment> comments;
 
-
-
 }

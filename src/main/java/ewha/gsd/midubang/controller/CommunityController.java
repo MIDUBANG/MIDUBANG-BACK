@@ -3,8 +3,11 @@ package ewha.gsd.midubang.controller;
 import ewha.gsd.midubang.dto.Message;
 import ewha.gsd.midubang.dto.PostDetailDto;
 import ewha.gsd.midubang.dto.request.CommentRequestDto;
+import ewha.gsd.midubang.dto.request.MessageRequestDto;
 import ewha.gsd.midubang.dto.request.PostRequestDto;
 import ewha.gsd.midubang.dto.IdDto;
+import ewha.gsd.midubang.dto.response.ChatGptResponseDto;
+import ewha.gsd.midubang.entity.Question;
 import ewha.gsd.midubang.jwt.TokenProvider;
 import ewha.gsd.midubang.service.CommunityService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -116,6 +120,12 @@ public class CommunityController {
                 )
         );
     }
+
+    /* chatgpt test */
+//    @PostMapping("/test")
+//    public List<Question> sendQuestion() {
+//        return communityService.getDailyQuestions();
+//    }
 
     /* 챗쪽이 글 상세 조회 */
 
