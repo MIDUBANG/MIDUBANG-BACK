@@ -2,6 +2,7 @@ package ewha.gsd.midubang.controller;
 
 import ewha.gsd.midubang.dto.Message;
 import ewha.gsd.midubang.dto.PostDetailDto;
+import ewha.gsd.midubang.dto.QuestionDetailDto;
 import ewha.gsd.midubang.dto.request.CommentRequestDto;
 import ewha.gsd.midubang.dto.request.MessageRequestDto;
 import ewha.gsd.midubang.dto.request.PostRequestDto;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -82,9 +84,9 @@ public class CommunityController {
 
     /* 금쪽이 글 목록 조회 */
     @GetMapping("/post/all")
-    public ResponseEntity getAllPostList() {
+    public ResponseEntity getAllPosts() {
         return ResponseEntity.ok(
-                communityService.getAllPostList()
+                communityService.getAllPosts()
         );
     }
 
@@ -121,21 +123,75 @@ public class CommunityController {
         );
     }
 
+
     /* chatgpt test */
 //    @PostMapping("/test")
 //    public List<Question> sendQuestion() {
 //        return communityService.getDailyQuestions();
 //    }
 
+
     /* 챗쪽이 글 상세 조회 */
+    @GetMapping("/question/{questionId}")
+    public ResponseEntity getQuestionDetail(@PathVariable Long questionId) {
+        QuestionDetailDto body = communityService.getQuestionDetail(questionId);
+
+        if (body == null) {
+            return ResponseEntity.ok(
+                    new Message(
+                            HttpStatus.NOT_FOUND,
+                            "The question does not exist."
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                body
+        );
+    }
 
 
     /* 챗쪽이 글 목록 조회 */
+    @GetMapping("/question/all")
+    public ResponseEntity getAllQuestions() {
+        return ResponseEntity.ok(
+                communityService.getAllQuestions()
+        );
+    }
 
 
     /* 챗쪽이 댓글 작성 */
+    @PostMapping("/question/{questionId}/answer")
+    public ResponseEntity createAnwer(HttpServletRequest request,
+                                      @PathVariable Long questionId, @RequestBody CommentRequestDto requestDto) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        return ResponseEntity.ok(
+                new IdDto(
+                        HttpStatus.OK,
+                        communityService.createAnswer(questionId, memberId, requestDto)
+                )
+        );
+    }
 
 
     /* 챗쪽이 댓글 삭제 */
+    @DeleteMapping("/question/answer/{answerId}")
+    public ResponseEntity deleteAnswer(HttpServletRequest request, @PathVariable Long answerId) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        if (!communityService.deleteAnswer(memberId, answerId)) {
+            return ResponseEntity.ok(
+                    new Message(
+                            HttpStatus.FORBIDDEN,
+                            "only writer can delete."
+                    )
+            );
+        }
+        return ResponseEntity.ok(
+                new Message(
+                        HttpStatus.OK,
+                        "delete success."
+                )
+        );
+    }
 
 }

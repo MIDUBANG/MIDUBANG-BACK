@@ -3,15 +3,14 @@ package ewha.gsd.midubang.service;
 import ewha.gsd.midubang.config.ChatGptConfig;
 import ewha.gsd.midubang.dto.PostDetailDto;
 import ewha.gsd.midubang.dto.PostListDto;
+import ewha.gsd.midubang.dto.QuestionDetailDto;
+import ewha.gsd.midubang.dto.QuestionListDto;
 import ewha.gsd.midubang.dto.request.ChatGptRequestDto;
 import ewha.gsd.midubang.dto.request.CommentRequestDto;
 import ewha.gsd.midubang.dto.request.MessageRequestDto;
 import ewha.gsd.midubang.dto.request.PostRequestDto;
 import ewha.gsd.midubang.dto.response.ChatGptResponseDto;
-import ewha.gsd.midubang.entity.Comment;
-import ewha.gsd.midubang.entity.Member;
-import ewha.gsd.midubang.entity.Post;
-import ewha.gsd.midubang.entity.Question;
+import ewha.gsd.midubang.entity.*;
 import ewha.gsd.midubang.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +41,7 @@ public class CommunityService {
     private final CommentRepository commentRepository;
     private final QuestionQuerydslRepository questionQuerydslRepository;
     private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
 
     @Value("${openai.api-key}")
     private String API_KEY;
@@ -91,7 +91,7 @@ public class CommunityService {
 
 
     /* 금쪽이 글 목록 조회 */
-    public List<PostListDto> getAllPostList() {
+    public List<PostListDto> getAllPosts() {
         return postQuerydslRepository.findAllPosts();
     }
 
@@ -215,21 +215,54 @@ public class CommunityService {
 
 
     /* 챗쪽이 글 상세 조회 */
+    public QuestionDetailDto getQuestionDetail(Long questionId) {
+        if (questionRepository.findById(questionId).orElse(null) == null)
+            return null;
+
+        return questionQuerydslRepository.findQuestionDetailById(questionId);
+    }
 
 
     /* 챗쪽이 글 목록 조회 */
+    public List<QuestionListDto> getAllQuestions() {
+        return questionQuerydslRepository.findAllQuestions();
+    }
 
 
     /* 챗쪽이 댓글 작성 */
+    public Long createAnswer(Long questionId, Long memberId, CommentRequestDto requestDto) {
+        Answer answer = new Answer();
+        Member member = memberRepository.findByMemberId(memberId);
+        Question question = questionRepository.findById(questionId).orElse(null);
+
+        answer.setMember(member);
+        answer.setQuestion(question);
+        answer.setContent(requestDto.getComment());
+        answer.setCreatedDate(getCurrentDateTime());
+
+        Answer savedAnswer = answerRepository.save(answer);
+        return savedAnswer.getId();
+    }
 
 
     /* 챗쪽이 댓글 삭제 */
+    public Boolean deleteAnswer(Long memberId, Long answerId) {
+        // 작성자 확인
+        Answer answer = answerRepository.findById(answerId).orElse(null);
+        if (answer.getMember().getMemberId() != memberId)
+            return false;
+
+        // 댓글 삭제
+        answerRepository.delete(answer);
+        return true;
+    }
+
 
     private String getCurrentDateTime() {
         Instant instant = Instant.now();
         ZoneId zoneId = ZoneId.of("Asia/Seoul");
         ZonedDateTime zdtSeoul = instant.atZone(zoneId);
-        String time = zdtSeoul.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        String time = zdtSeoul.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
         return time;
     }
 
@@ -237,7 +270,7 @@ public class CommunityService {
         Instant instant = Instant.now();
         ZoneId zoneId = ZoneId.of("Asia/Seoul");
         ZonedDateTime zdtSeoul = instant.atZone(zoneId);
-        String date = zdtSeoul.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String date = zdtSeoul.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
         return date;
     }
 }
