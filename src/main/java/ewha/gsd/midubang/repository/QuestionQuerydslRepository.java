@@ -63,6 +63,7 @@ public class QuestionQuerydslRepository {
                         question.content.as("question"),
                         question.answers.size().as("numOfAnswers")))
                 .from(question)
+                .orderBy(question.questionId.desc())
                 .fetch();
     }
 

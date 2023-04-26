@@ -49,6 +49,7 @@ public class PostQuerydslRepository {
                         post.detail.as("content"),
                         post.comments.size().as("numOfComments")))
                 .from(post)
+                .orderBy(post.postId.desc())
                 .fetch();
 
     }
@@ -97,6 +98,7 @@ public class PostQuerydslRepository {
                         post.comments.size().as("numOfComments")))
                 .where(post.createdDate.contains(today))
                 .from(post)
+                .orderBy(post.postId.desc())
                 .fetch();
     }
 
