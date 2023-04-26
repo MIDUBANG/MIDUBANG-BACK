@@ -8,6 +8,7 @@ import ewha.gsd.midubang.dto.request.MessageRequestDto;
 import ewha.gsd.midubang.dto.request.PostRequestDto;
 import ewha.gsd.midubang.dto.IdDto;
 import ewha.gsd.midubang.dto.response.ChatGptResponseDto;
+import ewha.gsd.midubang.dto.response.DeleteResponseDto;
 import ewha.gsd.midubang.entity.Question;
 import ewha.gsd.midubang.jwt.TokenProvider;
 import ewha.gsd.midubang.service.CommunityService;
@@ -46,18 +47,11 @@ public class CommunityController {
     @DeleteMapping("/post/{postId}")
     public ResponseEntity deletePost(HttpServletRequest request, @PathVariable Long postId) {
         Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
-        if (!communityService.deletePost(memberId, postId)) {
-            return ResponseEntity.ok(
-                    new Message(
-                            HttpStatus.FORBIDDEN,
-                            "작성자만 삭제할 수 있습니다."
-                    )
-            );
-        }
+        DeleteResponseDto responseDto = communityService.deletePost(memberId, postId);
         return ResponseEntity.ok(
                 new Message(
-                        HttpStatus.OK,
-                        "삭제 성공"
+                        responseDto.getStatus(),
+                        responseDto.getMessage()
                 )
         );
     }
@@ -107,18 +101,11 @@ public class CommunityController {
     @DeleteMapping("/post/comment/{commentId}")
     public ResponseEntity deleteComment(HttpServletRequest request, @PathVariable Long commentId) {
         Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
-        if (!communityService.deleteComment(memberId, commentId)) {
-            return ResponseEntity.ok(
-                    new Message(
-                            HttpStatus.FORBIDDEN,
-                            "작성자만 삭제할 수 있습니다."
-                    )
-            );
-        }
+        DeleteResponseDto responseDto = communityService.deleteComment(memberId, commentId);
         return ResponseEntity.ok(
                 new Message(
-                        HttpStatus.OK,
-                        "삭제 성공"
+                        responseDto.getStatus(),
+                        responseDto.getMessage()
                 )
         );
     }
@@ -178,18 +165,11 @@ public class CommunityController {
     @DeleteMapping("/question/answer/{answerId}")
     public ResponseEntity deleteAnswer(HttpServletRequest request, @PathVariable Long answerId) {
         Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
-        if (!communityService.deleteAnswer(memberId, answerId)) {
-            return ResponseEntity.ok(
-                    new Message(
-                            HttpStatus.FORBIDDEN,
-                            "only writer can delete."
-                    )
-            );
-        }
+        DeleteResponseDto responseDto = communityService.deleteAnswer(memberId, answerId);
         return ResponseEntity.ok(
                 new Message(
-                        HttpStatus.OK,
-                        "delete success."
+                        responseDto.getStatus(),
+                        responseDto.getMessage()
                 )
         );
     }

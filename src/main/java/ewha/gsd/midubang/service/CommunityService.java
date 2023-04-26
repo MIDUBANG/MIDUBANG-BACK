@@ -10,15 +10,14 @@ import ewha.gsd.midubang.dto.request.CommentRequestDto;
 import ewha.gsd.midubang.dto.request.MessageRequestDto;
 import ewha.gsd.midubang.dto.request.PostRequestDto;
 import ewha.gsd.midubang.dto.response.ChatGptResponseDto;
+import ewha.gsd.midubang.dto.response.DeleteResponseDto;
 import ewha.gsd.midubang.entity.*;
 import ewha.gsd.midubang.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -65,17 +64,28 @@ public class CommunityService {
 
 
     /* 금쪽이 글 삭제 */
-    public Boolean deletePost(Long memberId, Long postId) {
+    public DeleteResponseDto deletePost(Long memberId, Long postId) {
         // 작성자 확인
-        Post post = postQuerydslRepository.findByPostId(postId);
-        // post null 예외처리
+        Post post = postRepository.findById(postId).orElse(null);
+
+        DeleteResponseDto responseDto = new DeleteResponseDto();
+        if (post == null) {
+            responseDto.setStatus(HttpStatus.NOT_FOUND);
+            responseDto.setMessage("The post does not exist.");
+            return responseDto;
+        }
 
         if (post.getWriter().getMemberId() != memberId) {
-            return false;
+            responseDto.setStatus(HttpStatus.FORBIDDEN);
+            responseDto.setMessage("Only writer can delete.");
+            return responseDto;
         }
+
         // 글 삭제
         postRepository.delete(post);
-        return true;
+        responseDto.setStatus(HttpStatus.OK);
+        responseDto.setMessage("delete success.");
+        return responseDto;
     }
 
 
@@ -114,16 +124,27 @@ public class CommunityService {
 
 
     /* 금쪽이 댓글 삭제 */
-    public Boolean deleteComment(Long memberId, Long commentId) {
+    public DeleteResponseDto deleteComment(Long memberId, Long commentId) {
         // 작성자 확인
         Comment comment = commentRepository.findById(commentId).orElse(null);
+
+        DeleteResponseDto responseDto = new DeleteResponseDto();
+        if (comment == null) {
+            responseDto.setStatus(HttpStatus.NOT_FOUND);
+            responseDto.setMessage("The comment does not exist.");
+            return responseDto;
+        }
+
         if (comment.getMember().getMemberId() != memberId) {
-            return false;
+            responseDto.setStatus(HttpStatus.FORBIDDEN);
+            responseDto.setMessage("Only writer can delete.");
         }
 
         // 댓글 삭제
         commentRepository.delete(comment);
-        return true;
+        responseDto.setStatus(HttpStatus.OK);
+        responseDto.setMessage("delete success.");
+        return responseDto;
     }
 
 
@@ -246,15 +267,27 @@ public class CommunityService {
 
 
     /* 챗쪽이 댓글 삭제 */
-    public Boolean deleteAnswer(Long memberId, Long answerId) {
+    public DeleteResponseDto deleteAnswer(Long memberId, Long answerId) {
         // 작성자 확인
         Answer answer = answerRepository.findById(answerId).orElse(null);
-        if (answer.getMember().getMemberId() != memberId)
-            return false;
+
+        DeleteResponseDto responseDto = new DeleteResponseDto();
+        if (answer == null) {
+            responseDto.setStatus(HttpStatus.NOT_FOUND);
+            responseDto.setMessage("The answer does not exist.");
+            return responseDto;
+        }
+        if (answer.getMember().getMemberId() != memberId) {
+            responseDto.setStatus(HttpStatus.FORBIDDEN);
+            responseDto.setMessage("only writer can delete.");
+            return responseDto;
+        }
 
         // 댓글 삭제
         answerRepository.delete(answer);
-        return true;
+        responseDto.setStatus(HttpStatus.OK);
+        responseDto.setMessage("delete success.");
+        return responseDto;
     }
 
 
