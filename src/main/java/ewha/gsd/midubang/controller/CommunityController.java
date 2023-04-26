@@ -2,18 +2,26 @@ package ewha.gsd.midubang.controller;
 
 import ewha.gsd.midubang.dto.Message;
 import ewha.gsd.midubang.dto.PostDetailDto;
+import ewha.gsd.midubang.dto.QuestionDetailDto;
 import ewha.gsd.midubang.dto.request.CommentRequestDto;
+import ewha.gsd.midubang.dto.request.MessageRequestDto;
 import ewha.gsd.midubang.dto.request.PostRequestDto;
 import ewha.gsd.midubang.dto.IdDto;
+import ewha.gsd.midubang.dto.response.ChatGptResponseDto;
+import ewha.gsd.midubang.dto.response.CommunityResponseDto;
+import ewha.gsd.midubang.dto.response.DeleteResponseDto;
+import ewha.gsd.midubang.entity.Question;
 import ewha.gsd.midubang.jwt.TokenProvider;
 import ewha.gsd.midubang.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,18 +48,11 @@ public class CommunityController {
     @DeleteMapping("/post/{postId}")
     public ResponseEntity deletePost(HttpServletRequest request, @PathVariable Long postId) {
         Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
-        if (!communityService.deletePost(memberId, postId)) {
-            return ResponseEntity.ok(
-                    new Message(
-                            HttpStatus.FORBIDDEN,
-                            "작성자만 삭제할 수 있습니다."
-                    )
-            );
-        }
+        DeleteResponseDto responseDto = communityService.deletePost(memberId, postId);
         return ResponseEntity.ok(
                 new Message(
-                        HttpStatus.OK,
-                        "삭제 성공"
+                        responseDto.getStatus(),
+                        responseDto.getMessage()
                 )
         );
     }
@@ -72,15 +73,21 @@ public class CommunityController {
         }
 
         return ResponseEntity.ok(
-                body
+                new CommunityResponseDto(
+                        HttpStatus.OK,
+                        body
+                )
         );
     }
 
     /* 금쪽이 글 목록 조회 */
     @GetMapping("/post/all")
-    public ResponseEntity getAllPostList() {
+    public ResponseEntity getAllPosts() {
         return ResponseEntity.ok(
-                communityService.getAllPostList()
+                new CommunityResponseDto(
+                        HttpStatus.OK,
+                        communityService.getAllPosts()
+                )
         );
     }
 
@@ -101,31 +108,95 @@ public class CommunityController {
     @DeleteMapping("/post/comment/{commentId}")
     public ResponseEntity deleteComment(HttpServletRequest request, @PathVariable Long commentId) {
         Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
-        if (!communityService.deleteComment(memberId, commentId)) {
-            return ResponseEntity.ok(
-                    new Message(
-                            HttpStatus.FORBIDDEN,
-                            "작성자만 삭제할 수 있습니다."
-                    )
-            );
-        }
+        DeleteResponseDto responseDto = communityService.deleteComment(memberId, commentId);
         return ResponseEntity.ok(
                 new Message(
-                        HttpStatus.OK,
-                        "삭제 성공"
+                        responseDto.getStatus(),
+                        responseDto.getMessage()
                 )
         );
     }
 
+
+    /* chatgpt test */
+//    @PostMapping("/test")
+//    public List<Question> sendQuestion() {
+//        return communityService.getDailyQuestions();
+//    }
+
+
     /* 챗쪽이 글 상세 조회 */
+    @GetMapping("/question/{questionId}")
+    public ResponseEntity getQuestionDetail(@PathVariable Long questionId) {
+        QuestionDetailDto body = communityService.getQuestionDetail(questionId);
+
+        if (body == null) {
+            return ResponseEntity.ok(
+                    new Message(
+                            HttpStatus.NOT_FOUND,
+                            "The question does not exist."
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new CommunityResponseDto(
+                        HttpStatus.OK,
+                        body
+                )
+        );
+    }
 
 
     /* 챗쪽이 글 목록 조회 */
+    @GetMapping("/question/all")
+    public ResponseEntity getAllQuestions() {
+        return ResponseEntity.ok(
+                new CommunityResponseDto(
+                        HttpStatus.OK,
+                        communityService.getAllQuestions()
+                )
+        );
+    }
 
 
     /* 챗쪽이 댓글 작성 */
+    @PostMapping("/question/{questionId}/answer")
+    public ResponseEntity createAnwer(HttpServletRequest request,
+                                      @PathVariable Long questionId, @RequestBody CommentRequestDto requestDto) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        return ResponseEntity.ok(
+                new IdDto(
+                        HttpStatus.OK,
+                        communityService.createAnswer(questionId, memberId, requestDto)
+                )
+        );
+    }
 
 
     /* 챗쪽이 댓글 삭제 */
+    @DeleteMapping("/question/answer/{answerId}")
+    public ResponseEntity deleteAnswer(HttpServletRequest request, @PathVariable Long answerId) {
+        Long memberId = tokenProvider.getUserInfoByRequest(request).getMemberId();
+        DeleteResponseDto responseDto = communityService.deleteAnswer(memberId, answerId);
+        return ResponseEntity.ok(
+                new Message(
+                        responseDto.getStatus(),
+                        responseDto.getMessage()
+                )
+        );
+    }
+
+
+    /* 오늘의 질문 */
+    @GetMapping("/today")
+    public ResponseEntity getTodayQuestions() {
+        return ResponseEntity.ok(
+                new CommunityResponseDto(
+                        HttpStatus.OK,
+                        communityService.getTodayQuestions()
+                )
+        );
+    }
 
 }
