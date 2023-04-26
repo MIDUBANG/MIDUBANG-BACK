@@ -174,4 +174,13 @@ public class CommunityController {
         );
     }
 
+
+    /* 오늘의 질문 */
+    @GetMapping("/today")
+    public ResponseEntity getTodayQuestions() {
+        return ResponseEntity.ok(
+                communityService.getTodayQuestions()
+        );
+    }
+
 }

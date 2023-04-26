@@ -82,6 +82,22 @@ public class PostQuerydslRepository {
         );
 
         return postDetailDto;
-
     }
+
+    @Transactional(readOnly = true)
+    public List<PostListDto> findTodayPosts(String today) {
+        JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(em);
+
+        return jpaQueryFactory
+                .select(Projections.fields(PostListDto.class,
+                        post.postId,
+                        post.writer.email.as("writer"),
+                        post.question.as("title"),
+                        post.detail.as("content"),
+                        post.comments.size().as("numOfComments")))
+                .where(post.createdDate.contains(today))
+                .from(post)
+                .fetch();
+    }
+
 }

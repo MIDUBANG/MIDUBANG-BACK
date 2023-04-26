@@ -95,5 +95,18 @@ public class QuestionQuerydslRepository {
         return questionDetailDto;
     }
 
+    @Transactional(readOnly = true)
+    public List<QuestionListDto> findTodayQuestions(String today) {
+        JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(em);
+
+        return jpaQueryFactory
+                .select(Projections.fields(QuestionListDto.class,
+                        question.questionId,
+                        question.content.as("question"),
+                        question.answers.size().as("numOfAnswers")))
+                .where(question.createdDate.eq(today))
+                .from(question)
+                .fetch();
+    }
 
 }

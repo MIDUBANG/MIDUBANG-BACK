@@ -11,6 +11,7 @@ import ewha.gsd.midubang.dto.request.MessageRequestDto;
 import ewha.gsd.midubang.dto.request.PostRequestDto;
 import ewha.gsd.midubang.dto.response.ChatGptResponseDto;
 import ewha.gsd.midubang.dto.response.DeleteResponseDto;
+import ewha.gsd.midubang.dto.response.TodayResponseDto;
 import ewha.gsd.midubang.entity.*;
 import ewha.gsd.midubang.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -290,6 +291,20 @@ public class CommunityService {
         return responseDto;
     }
 
+
+    /* 오늘의 질문 */
+    public TodayResponseDto getTodayQuestions() {
+        String today = getCurrentDate();
+        List<QuestionListDto> questions = questionQuerydslRepository.findTodayQuestions(today);
+        List<PostListDto> posts = postQuerydslRepository.findTodayPosts(today);
+
+        TodayResponseDto todayResponseDto = new TodayResponseDto(
+                questions,
+                posts
+        );
+
+        return todayResponseDto;
+    }
 
     private String getCurrentDateTime() {
         Instant instant = Instant.now();
