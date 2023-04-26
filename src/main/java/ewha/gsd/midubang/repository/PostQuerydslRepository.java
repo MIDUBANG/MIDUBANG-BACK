@@ -43,8 +43,10 @@ public class PostQuerydslRepository {
 
         return jpaQueryFactory
                 .select(Projections.fields(PostListDto.class,
+                        post.postId,
                         post.writer.email.as("writer"),
                         post.question.as("title"),
+                        post.detail.as("content"),
                         post.comments.size().as("numOfComments")))
                 .from(post)
                 .fetch();
@@ -63,6 +65,7 @@ public class PostQuerydslRepository {
                 .fetchFirst();
 
         PostDetailDto postDetailDto = new PostDetailDto(
+                tmp.getPostId(),
                 tmp.getWriter().getEmail(),
                 tmp.getQuestion(),
                 tmp.getDetail(),
@@ -70,6 +73,7 @@ public class PostQuerydslRepository {
 
                 tmp.getComments().stream()
                         .map(p -> new CommentListDto(
+                                p.getId(),
                                 p.getMember().getEmail(),
                                 p.getContent(),
                                 p.getCreatedDate()))
