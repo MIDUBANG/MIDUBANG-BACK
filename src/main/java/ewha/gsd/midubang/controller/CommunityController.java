@@ -8,6 +8,7 @@ import ewha.gsd.midubang.dto.request.MessageRequestDto;
 import ewha.gsd.midubang.dto.request.PostRequestDto;
 import ewha.gsd.midubang.dto.IdDto;
 import ewha.gsd.midubang.dto.response.ChatGptResponseDto;
+import ewha.gsd.midubang.dto.response.CommunityResponseDto;
 import ewha.gsd.midubang.dto.response.DeleteResponseDto;
 import ewha.gsd.midubang.entity.Question;
 import ewha.gsd.midubang.jwt.TokenProvider;
@@ -72,7 +73,10 @@ public class CommunityController {
         }
 
         return ResponseEntity.ok(
-                body
+                new CommunityResponseDto(
+                        HttpStatus.OK,
+                        body
+                )
         );
     }
 
@@ -80,7 +84,10 @@ public class CommunityController {
     @GetMapping("/post/all")
     public ResponseEntity getAllPosts() {
         return ResponseEntity.ok(
-                communityService.getAllPosts()
+                new CommunityResponseDto(
+                        HttpStatus.OK,
+                        communityService.getAllPosts()
+                )
         );
     }
 
@@ -133,7 +140,10 @@ public class CommunityController {
         }
 
         return ResponseEntity.ok(
-                body
+                new CommunityResponseDto(
+                        HttpStatus.OK,
+                        body
+                )
         );
     }
 
@@ -142,7 +152,10 @@ public class CommunityController {
     @GetMapping("/question/all")
     public ResponseEntity getAllQuestions() {
         return ResponseEntity.ok(
-                communityService.getAllQuestions()
+                new CommunityResponseDto(
+                        HttpStatus.OK,
+                        communityService.getAllQuestions()
+                )
         );
     }
 
@@ -179,7 +192,10 @@ public class CommunityController {
     @GetMapping("/today")
     public ResponseEntity getTodayQuestions() {
         return ResponseEntity.ok(
-                communityService.getTodayQuestions()
+                new CommunityResponseDto(
+                        HttpStatus.OK,
+                        communityService.getTodayQuestions()
+                )
         );
     }
 
