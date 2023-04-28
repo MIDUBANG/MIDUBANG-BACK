@@ -5,6 +5,8 @@ import ewha.gsd.midubang.domain.analysis.entity.Record;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 public class RecordDetailsDto {
     private Long recordId;
@@ -14,6 +16,8 @@ public class RecordDetailsDto {
     private ContractType contract_type;
     private String image_url;
 
+    private LocalDate record_date;
+
     @Builder
     public RecordDetailsDto(Record record) {
         this.recordId = record.getRecordId();
@@ -22,5 +26,6 @@ public class RecordDetailsDto {
         this.answer_commission = record.getAnswer_commission();
         this.contract_type = record.getContract_type();
         this.image_url = record.getImage_url();
+        this.record_date = record.getRecord_date();
     }
 }
