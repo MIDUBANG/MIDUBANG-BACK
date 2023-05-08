@@ -16,8 +16,16 @@ import ewha.gsd.midubang.domain.community.dto.QuestionListDto;
 import ewha.gsd.midubang.domain.community.dto.TodayResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -42,10 +50,18 @@ public class CommunityService {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
 
-    @Value("${openai.api-key}")
-    private String API_KEY;
+//    @Qualifier("openaiRestTemplate")
+//    private RestTemplate restTemplate;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Value("${openai.model}")
+    private String model;
+
+    @Value("${openai.api.url}")
+    private String apiUrl;
+
+    @Value("${openai.api.key}")
+    private String openaiApiKey;
+
 
     /* 금쪽이 글 작성 */
     public Long createPost(Long memberId, PostRequestDto request) {
@@ -150,56 +166,48 @@ public class CommunityService {
 
     /* 챗쪽이 글 업로드 */
     /* 매일 오전 6시에 실행 */
-    public HttpEntity<ChatGptRequestDto> buildHttpEntity(ChatGptRequestDto requestDto) {
+    private HttpEntity<ChatRequest> getHttpEntity(ChatRequest chatRequest) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(ChatGptConfig.MEDIA_TYPE));
-        headers.add(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + API_KEY);
+        headers.set("Content-Type", "application/json");
+        headers.set("Authorization", "Bearer " + openaiApiKey);
 
-        return new HttpEntity<>(requestDto, headers);
-    }
-
-    public ChatGptResponseDto getResponse(HttpEntity<ChatGptRequestDto> chatGptRequestDtoHttpEntity) {
-        ResponseEntity<ChatGptResponseDto> responseEntity = restTemplate.postForEntity(
-                ChatGptConfig.URL,
-                chatGptRequestDtoHttpEntity,
-                ChatGptResponseDto.class
-        );
-
-        return responseEntity.getBody();
+        HttpEntity<ChatRequest> httpRequest = new HttpEntity<>(chatRequest, headers);
+        return httpRequest;
     }
 
     @Scheduled(cron = "0 0 6 * * *", zone = "Asia/Seoul")
     public void getDailyQuestions() {
+
+        List<Question> newQuestionList = new ArrayList<>();
 
         List<String> trueQuestions = questionQuerydslRepository.findAllTrueQuestions();
 
         String query1 = "임대차 계약에 대해 잘 모르는 사회초년생이 할 법한 질문 1개를 알려줘.";
         query1 += "\n조건은 다음과 같아.";
         query1 += "\n1.사회초년생에게 도움이 될 만한 진지한 질문이어야 해.";
-        query1 += "\n2.다음 리스트에 있는 질문과 중복되면 안돼:\n";
+        query1 += "\n2.다음 리스트에 있는 질문과 비슷한 질문이면 안돼:\n";
         query1 += trueQuestions;
-        query1 += "\nn3.답변 형식은 '진지한 질문: {진지한 질문}' 이 형식으로 적어줘";
+        query1 += "\n3.답변 형식은 '진지한 질문: {진지한 질문}' 이 형식으로 적어줘";
 
-        log.info(query1);
+        //log.info(query1);
 
-        ChatGptResponseDto response1 = this.getResponse(
-                this.buildHttpEntity(
-                        new ChatGptRequestDto(
-                                ChatGptConfig.MODEL,
-                                query1,
-                                ChatGptConfig.MAX_TOKEN,
-                                ChatGptConfig.TEMPERATURE,
-                                ChatGptConfig.TOP_P
-                        )
-                )
-        );
+        // Create a request
+        ChatRequest request1 = new ChatRequest(model, query1);
 
-        String chatGptResponse1 = response1.getChoices().get(0).getText();
-        List<Question> newQuestionList = new ArrayList<>();
+        //log.info(request.toString());
 
-        String trueQuestion = chatGptResponse1.substring(11);
+        // Call the API
+        RestTemplate restTemplate1 = new RestTemplate();
+        ChatResponse response1 = restTemplate1.postForObject(apiUrl, getHttpEntity(request1), ChatResponse.class);
+
+        if (response1 == null || response1.getChoices() == null || response1.getChoices().isEmpty()) {
+            throw new RuntimeException();
+        }
+
+        String trueQuestion = response1.getChoices().get(0).getMessage().getContent().substring(8);
         Question newQuestion1 = new Question(trueQuestion, getCurrentDate(), Boolean.TRUE, null);
         newQuestionList.add(newQuestion1);
+
 
         //
 
@@ -208,26 +216,22 @@ public class CommunityService {
         String query2 = "임대차 계약에 대해 잘 모르는 사회초년생이 할 법한 질문 1개를 알려줘.";
         query2 += "\n조건은 다음과 같아.";
         query2 += "\n1.황당하고 엉뚱한 질문이어야 해.";
-        query2 += "\n2.다음 리스트에 있는 질문과 중복되면 안돼:\n";
+        query2 += "\n2.다음 리스트에 있는 질문과 비슷한 내용이면 안돼:\n";
         query2 += falseQuestions;
         query2 += "\n3.답변 형식은 '황당하고 엉뚱한 질문: {황당하고 엉뚱한 질문}' 이 형식으로 적어줘";
 
-        log.info(query2);
+        //log.info(query2);
 
-        ChatGptResponseDto response2 = this.getResponse(
-                this.buildHttpEntity(
-                        new ChatGptRequestDto(
-                                ChatGptConfig.MODEL,
-                                query2,
-                                ChatGptConfig.MAX_TOKEN,
-                                ChatGptConfig.TEMPERATURE,
-                                ChatGptConfig.TOP_P
-                        )
-                )
-        );
+        ChatRequest request2 = new ChatRequest(model, query2);
 
-        String chatGptResponse2 = response2.getChoices().get(0).getText();
-        String falseQuestion = chatGptResponse2.substring(16);
+        RestTemplate restTemplate2 = new RestTemplate();
+        ChatResponse response2 = restTemplate2.postForObject(apiUrl, getHttpEntity(request2), ChatResponse.class);
+
+        if (response2 == null || response2.getChoices() == null || response2.getChoices().isEmpty()) {
+            throw new RuntimeException();
+        }
+
+        String falseQuestion = response2.getChoices().get(0).getMessage().getContent().substring(13);
         Question newQuestion2 = new Question(falseQuestion, getCurrentDate(), Boolean.FALSE, null);
         newQuestionList.add(newQuestion2);
 
