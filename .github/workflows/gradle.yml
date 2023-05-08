@@ -76,7 +76,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/MidubangSpring:latest
+        tags: ${{ secrets.DOCKER_REPO }}:latest
 
 
     - name: Get Github Actions IP
