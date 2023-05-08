@@ -105,10 +105,10 @@ jobs:
        key: ${{ secrets.PRIVATE_KEY }}
        envs: GITHUB_SHA
        script: |
-            docker stop spring-con && docker rm spring-con
-            docker rmi -f gayeongpark/midubang-spring
-            docker pull gayeongpark/midubang-spring
-            docker run -d --name spring-con -p 8090:8090 --restart always gayeongpark/midubang-spring
+            sudo docker stop spring-con && docker rm spring-con
+            sudo docker rmi -f gayeongpark/midubang-spring
+            sudo docker pull gayeongpark/midubang-spring
+            sudo docker run -d --name spring-con -p 8090:8090 --restart always gayeongpark/midubang-spring
          
 
     - name: Remove Github Actions IP From Security Group
