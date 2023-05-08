@@ -1,5 +1,6 @@
 package ewha.gsd.midubang.domain.community.controller;
 
+import ewha.gsd.midubang.domain.community.entity.Question;
 import ewha.gsd.midubang.domain.community.service.CommunityService;
 import ewha.gsd.midubang.domain.community.dto.*;
 import ewha.gsd.midubang.global.dto.Message;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -111,7 +113,7 @@ public class CommunityController {
 
     /* chatgpt test */
 //    @PostMapping("/test")
-//    public List<Question> sendQuestion() {
+//    public List<Question> sendQuestion() throws Exception {
 //        return communityService.getDailyQuestions();
 //    }
 
