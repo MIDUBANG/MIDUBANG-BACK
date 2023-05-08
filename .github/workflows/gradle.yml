@@ -77,12 +77,30 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/midubang-spring:latest
-        
+
+
+    - name: Get Github Actions IP
+      id: ip
+      uses: haythem/public-ip@v1.3
+
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_EC2_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_EC2_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-2
+
+
+    - name: Add Github Actions IP to Security group
+      run: |
+        aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_EC2_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
        host: ${{ secrets.EC2_SERVER_HOST }}
-       port: 22222
+       port: 22
        username: ubuntu
        key: ${{ secrets.PRIVATE_KEY }}
        envs: GITHUB_SHA
@@ -90,7 +108,12 @@ jobs:
             docker stop spring-con && docker rm spring-con
             docker rmi -f gayeongpark/midubang-spring
             docker pull gayeongpark/midubang-spring
-            docker run -d --name spring-con -p 8080:8080 --restart always gayeongpark/midubang-spring
+            docker run -d --name spring-con -p 8090:8090 --restart always gayeongpark/midubang-spring
+         
+
+    - name: Remove Github Actions IP From Security Group
+      run: |
+        aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_EC2_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
           
           
 
