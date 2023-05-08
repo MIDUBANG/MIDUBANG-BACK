@@ -82,6 +82,7 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
        host: ${{ secrets.EC2_SERVER_HOST }}
+       port: 22222
        username: ubuntu
        key: ${{ secrets.PRIVATE_KEY }}
        envs: GITHUB_SHA
