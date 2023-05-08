@@ -105,6 +105,8 @@ jobs:
        key: ${{ secrets.PRIVATE_KEY }}
        envs: GITHUB_SHA
        script: |
+            sudo docker stop MidubangSpring && docker rm MidubangSpring
+            sudo docker rmi -f ${{ secrets.DOCKER_REPO }}
             sudo docker pull ${{ secrets.DOCKER_REPO }}
             sudo docker run -d --name MidubangSpring -p 8090:8090 --restart always ${{ secrets.DOCKER_REPO }}
          
