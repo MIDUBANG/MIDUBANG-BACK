@@ -126,7 +126,7 @@ public class AnalysisService {
     }
 
     public List<Long> strToLongList(String str){
-        long[] noArray = Stream.of(str.split(",")).mapToLong(Long::parseLong).toArray();
+        long[] noArray = Stream.of(str.split("|")).mapToLong(Long::parseLong).toArray();
         Long[] noListBoxed = ArrayUtils.toObject(noArray);
         List<Long> noList = Arrays.asList(noListBoxed);
 
