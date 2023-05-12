@@ -13,6 +13,8 @@ import ewha.gsd.midubang.domain.community.dto.PostListDto;
 import ewha.gsd.midubang.domain.community.dto.QuestionDetailDto;
 import ewha.gsd.midubang.domain.community.dto.QuestionListDto;
 import ewha.gsd.midubang.domain.community.dto.TodayResponseDto;
+import ewha.gsd.midubang.domain.word.repository.WordRepository;
+import ewha.gsd.midubang.domain.word.repository.WordRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +31,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @Slf4j
@@ -42,6 +45,7 @@ public class CommunityService {
     private final QuestionQuerydslRepository questionQuerydslRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
+    private final WordRepositoryImpl wordRepository;
 
 //    @Qualifier("openaiRestTemplate")
 //    private RestTemplate restTemplate;
@@ -173,13 +177,21 @@ public class CommunityService {
 
         List<Question> newQuestionList = new ArrayList<>();
 
-        List<String> trueQuestions = questionQuerydslRepository.findAllTrueQuestions();
+        //List<String> trueQuestions = questionQuerydslRepository.findAllTrueQuestions();
+
+        Random random = new Random();
+        random.setSeed(System.currentTimeMillis());
+
+        Long randomNum = Long.valueOf(random.nextInt(308) + 1);
+        String randomWord = wordRepository.findWordById(randomNum).getWord();
 
         String query1 = "임대차 계약에 대해 잘 모르는 사회초년생이 할 법한 질문 1개를 알려줘.";
-        query1 += "\n조건은 다음과 같아.";
-        query1 += "\n1.사회초년생에게 도움이 될 만한 진지한 질문이어야 해.";
-        query1 += "\n2.다음 리스트에 있는 질문과 비슷한 질문이면 안돼:\n";
-        query1 += trueQuestions;
+        query1 += "\n질문의 조건은 다음과 같아.";
+        query1 += "\n1.사회초년생에게 도움이 될 수 있을만한 진지한 질문이어야 해.";
+        //query1 += "\n2.다음 리스트에 있는 질문과 비슷한 질문이면 안돼:\n";
+        //query1 += trueQuestions;
+        query1 += "\n2.다음 키워드와 관련된 질문이어야 돼: ";
+        query1 += randomWord;
         query1 += "\n3.답변 형식은 '진지한 질문: {진지한 질문}' 이 형식으로 적어줘";
 
         //log.info(query1);
@@ -204,13 +216,15 @@ public class CommunityService {
 
         //
 
-        List<String> falseQuestions = questionQuerydslRepository.findAllFalseQuestions();
+        //List<String> falseQuestions = questionQuerydslRepository.findAllFalseQuestions();
 
         String query2 = "임대차 계약에 대해 잘 모르는 사회초년생이 할 법한 질문 1개를 알려줘.";
         query2 += "\n조건은 다음과 같아.";
-        query2 += "\n1.황당하고 엉뚱한 질문이어야 해.";
-        query2 += "\n2.다음 리스트에 있는 질문과 비슷한 내용이면 안돼:\n";
-        query2 += falseQuestions;
+        query2 += "\n1.다소 황당하고 엉뚱한 질문이어야 해. ex) 보증금도 할부가 되나요?";
+        //query2 += "\n2.다음 리스트에 있는 질문과 비슷한 내용이면 안돼:\n";
+        //query2 += falseQuestions;
+        query2 += "\n2.다음 키워드와 관련된 질문이어야 돼: ";
+        query2 += randomWord;
         query2 += "\n3.답변 형식은 '황당하고 엉뚱한 질문: {황당하고 엉뚱한 질문}' 이 형식으로 적어줘";
 
         //log.info(query2);
@@ -229,6 +243,7 @@ public class CommunityService {
         newQuestionList.add(newQuestion2);
 
         questionRepository.saveAll(newQuestionList);
+        //return newQuestionList;
     }
 
 
