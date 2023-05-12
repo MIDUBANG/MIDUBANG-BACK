@@ -14,6 +14,11 @@ spring:
     config:
         import: application-secret.yml
 
+    data:
+        redis:
+            repositories:
+                enabled: false
+
 
 server:
     port : 8080
