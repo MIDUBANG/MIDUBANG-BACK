@@ -75,6 +75,8 @@ public class WordRepositoryImpl implements WordRepositoryCustom {
     public List<Word> findWordsById(List<Long> ids){
         List<Word> words = new ArrayList<>();
         for(Long id : ids){
+            if (id == null)
+                continue;
             words.add(queryFactory.selectFrom(word1)
                     .from(word1)
                     .where(word1.wordId.eq(id))

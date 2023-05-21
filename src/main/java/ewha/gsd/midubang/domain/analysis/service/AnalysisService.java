@@ -126,7 +126,7 @@ public class AnalysisService {
     }
 
     public List<Long> strToLongList(String str){
-        if (str == null)
+        if (str.isBlank())
             return null;
         long[] noArray = Stream.of(str.split("\\|")).mapToLong(Long::parseLong).toArray();
         Long[] noListBoxed = ArrayUtils.toObject(noArray);
@@ -143,7 +143,11 @@ public class AnalysisService {
         for(Tuple t : tuple){
             String str = t.get(recordCase.aCase.word_ref);
             List<Long> noList = strToLongList(str);
-            wordList.addAll(noList);
+            if (noList != null)
+                wordList.addAll(noList);
+            else
+                wordList.add(null);
+
             MyCaseDto myCaseDto = MyCaseDto.builder()
                     .caseId(t.get(recordCase.aCase.id))
                     .case_detail(t.get(recordCase.aCase.case_detail))
