@@ -23,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,11 +42,12 @@ public class MemberController {
     }
 
     @PostMapping("/login/oauth/kakao")
-    public ResponseEntity<TokenDTO> login(@RequestParam("code") String code) throws IOException, ServletException {
+    public ResponseEntity<TokenDTO> login(@RequestParam("code") String code)
+            throws IOException, ServletException, ExecutionException, InterruptedException {
         KakaoToken oauthToken = kakaoService.getAccessToken(code);
         Member saved_member = kakaoService.saveUser(oauthToken.getAccess_token());
 
-        TokenDTO jwtToken = memberService.joinJwtToken(saved_member.getEmail());
+        TokenDTO jwtToken = memberService.joinJwtToken(saved_member.getEmail()).get();
 
         return ResponseEntity.ok(jwtToken);
     }
@@ -58,25 +60,28 @@ public class MemberController {
 
     //access token 재발급
     @GetMapping("/refresh")
-    public ResponseEntity<newRefreshTokenResponse> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public ResponseEntity<newRefreshTokenResponse> refreshToken(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException, ExecutionException, InterruptedException {
 
         String refreshToken = tokenProvider.resolveToken(request);
         log.info("resolved token : " + refreshToken);
-        TokenDTO tokenDTO = memberService.validRefreshToken(refreshToken, response);
+        TokenDTO tokenDTO = memberService.validRefreshToken(refreshToken, response).get();
         newRefreshTokenResponse token = new newRefreshTokenResponse(tokenDTO.getAccessToken(), tokenDTO.getRefreshToken());
         return ResponseEntity.ok(token);
     }
 
     /* 회원가입 */
     @PostMapping("/signup")
-    public ResponseEntity<TokenDTO> signup(@RequestBody AccountDto accountDto, HttpServletResponse response) throws ServletException, IOException {
-        return ResponseEntity.ok(memberService.signup(accountDto,response));
+    public ResponseEntity<TokenDTO> signup(@RequestBody AccountDto accountDto, HttpServletResponse response)
+            throws ServletException, IOException, ExecutionException, InterruptedException {
+        return ResponseEntity.ok(memberService.signup(accountDto,response).get());
     }
 
     /* 로그인 */
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> login(@RequestBody AccountDto accountDto, HttpServletResponse response) throws IOException, ServletException {
-        return ResponseEntity.ok(memberService.login(accountDto,response));
+    public ResponseEntity<TokenDTO> login(@RequestBody AccountDto accountDto, HttpServletResponse response)
+            throws IOException, ServletException, ExecutionException, InterruptedException {
+        return ResponseEntity.ok(memberService.login(accountDto,response).get());
     }
 
     // Error

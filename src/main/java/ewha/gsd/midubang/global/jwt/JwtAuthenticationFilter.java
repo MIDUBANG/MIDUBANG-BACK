@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private AuthenticationManager authenticationManager;
@@ -53,7 +54,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         UserPrincipal principalDetails = (UserPrincipal) authResult.getPrincipal();
 
         //token 생성
-        TokenDTO jwtToken = memberService.joinJwtToken(principalDetails.getEmail());
+        TokenDTO jwtToken = null;
+        try {
+            jwtToken = memberService.joinJwtToken(principalDetails.getEmail()).get();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
 
         ObjectMapper objectMapper = new ObjectMapper();
 
