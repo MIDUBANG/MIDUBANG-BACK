@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,7 @@ public class MemberService {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
 
 
+    @Async
     @Transactional
     public TokenDTO joinJwtToken(String email) throws IOException, ServletException {
         Member member = memberRepository.findByEmail(email);
@@ -81,6 +83,7 @@ public class MemberService {
 
 
 
+    @Async
     @Transactional
     public  TokenDTO validRefreshToken(String refreshToken, HttpServletResponse response) throws IOException, ServletException {
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequestForReissue(refreshToken, response);
@@ -109,6 +112,7 @@ public class MemberService {
 
     }
 
+    @Async
     @Transactional
     /* 회원 가입 */
     public TokenDTO signup (AccountDto accountDto, HttpServletResponse response) throws IOException, ServletException {
@@ -128,6 +132,7 @@ public class MemberService {
         return token;
     }
 
+    @Async
     public TokenDTO login (AccountDto accountDto, HttpServletResponse response) throws IOException, ServletException {
         String email = accountDto.getEmail();
         // 가입 여부 확인
