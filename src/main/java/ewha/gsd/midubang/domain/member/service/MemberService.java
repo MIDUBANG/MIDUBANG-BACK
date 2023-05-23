@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @Service
 @Slf4j
@@ -40,7 +43,8 @@ public class MemberService {
 
     @Async
     @Transactional
-    public TokenDTO joinJwtToken(String email) throws IOException, ServletException {
+    public Future<TokenDTO> joinJwtToken(String email)
+            throws IOException, ServletException {
         Member member = memberRepository.findByEmail(email);
         String refreshToken = redisDao.getValues(email);
         log.info(String.valueOf(member.getMemberId()), member.getEmail());
@@ -51,7 +55,8 @@ public class MemberService {
             //access,refresh token 생성 + Redis에 refresh token 저장
             TokenDTO tokenDTO = tokenProvider.createToken(member.getMemberId(), member.getEmail());
 
-            return tokenDTO;
+            //return tokenDTO;
+            return new AsyncResult<>(tokenDTO);
 
         }
         else{ //refresh token이 있는 경우
@@ -59,11 +64,14 @@ public class MemberService {
 
             //refresh token이 유효한 경우
             if(accessToken!=null){
-                return new TokenDTO("Bearer",accessToken, ACCESS_TOKEN_EXPIRE_TIME, refreshToken);
+                //return new TokenDTO("Bearer",accessToken, ACCESS_TOKEN_EXPIRE_TIME, refreshToken);
+                TokenDTO tokenDTO = new TokenDTO("Bearer",accessToken, ACCESS_TOKEN_EXPIRE_TIME, refreshToken);
+                return new AsyncResult<>(tokenDTO);
             }
             else{ //accessToken이 무효(return null)하면 새로운 access, refresh token 생성
                 TokenDTO new_tokenDTO = tokenProvider.createToken(member.getMemberId(), member.getEmail());
-                return new_tokenDTO;
+                //return new_tokenDTO;
+                return new AsyncResult<>(new_tokenDTO);
             }
         }
 
@@ -85,7 +93,8 @@ public class MemberService {
 
     @Async
     @Transactional
-    public  TokenDTO validRefreshToken(String refreshToken, HttpServletResponse response) throws IOException, ServletException {
+    public Future<TokenDTO> validRefreshToken(String refreshToken, HttpServletResponse response)
+            throws IOException, ServletException {
         UserInfoDto userInfoDto = tokenProvider.getUserInfoByRequestForReissue(refreshToken, response);
 
         log.info("96 : " + userInfoDto);
@@ -93,7 +102,9 @@ public class MemberService {
         if(isSameRefreshToken(userInfoDto, refreshToken)){
             String accessToken = tokenProvider.reissueAccessToken(userInfoDto.getMemberId(), userInfoDto.getEmail());
             if(accessToken!=null){
-                return new TokenDTO("Bearer",accessToken, ACCESS_TOKEN_EXPIRE_TIME, refreshToken);
+                //return new TokenDTO("Bearer",accessToken, ACCESS_TOKEN_EXPIRE_TIME, refreshToken);
+                TokenDTO tokenDTO = new TokenDTO("Bearer",accessToken, ACCESS_TOKEN_EXPIRE_TIME, refreshToken);
+                return new AsyncResult<>(tokenDTO);
             }
         }
 
@@ -115,7 +126,8 @@ public class MemberService {
     @Async
     @Transactional
     /* 회원 가입 */
-    public TokenDTO signup (AccountDto accountDto, HttpServletResponse response) throws IOException, ServletException {
+    public Future<TokenDTO> signup (AccountDto accountDto, HttpServletResponse response)
+            throws IOException, ServletException, ExecutionException, InterruptedException {
         String email = accountDto.getEmail();
         Member member = new Member(
                 email,
@@ -128,12 +140,14 @@ public class MemberService {
         memberRepository.save(member);
 
         // 토큰 반환
-        TokenDTO token = joinJwtToken(email);
-        return token;
+        TokenDTO token = joinJwtToken(email).get();
+        //return token;
+        return new AsyncResult<>(token);
     }
 
     @Async
-    public TokenDTO login (AccountDto accountDto, HttpServletResponse response) throws IOException, ServletException {
+    public Future<TokenDTO> login (AccountDto accountDto, HttpServletResponse response)
+            throws IOException, ServletException, ExecutionException, InterruptedException {
         String email = accountDto.getEmail();
         // 가입 여부 확인
         if (!memberRepository.existsByEmail(email)) {
@@ -147,8 +161,9 @@ public class MemberService {
             throw new BadRequestException("비밀번호가 일치하지 않습니다.");
         }
         // 토큰 반환
-        TokenDTO token = joinJwtToken(email);
-        return token;
+        TokenDTO token = joinJwtToken(email).get();
+        //return token;
+        return new AsyncResult<>(token);
     }
 
 
