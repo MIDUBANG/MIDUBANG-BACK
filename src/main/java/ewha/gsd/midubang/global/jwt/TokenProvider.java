@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 
 @Service
@@ -43,8 +44,8 @@ public class TokenProvider {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_TYPE = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 3; //30분 유지
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24; //1일 유지
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = Duration.ofMinutes(30).toMillis(); //30분 유지
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = Duration.ofDays(1).toMillis(); //1일 유지
 
     private  Key access_key;
     private Key refresh_key;
