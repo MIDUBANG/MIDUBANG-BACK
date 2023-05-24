@@ -18,11 +18,4 @@ public class WebConfig implements WebMvcConfigurer {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // CORS를 적용할 URL 패턴 정의
-                .allowedOrigins("https://www.midubang.com") // 자원 공유를 허락할 Origin 지정
-                .allowedMethods("GET", "POST", "DELETE", "PUT") // 허용할 HTTP method 지정
-                .maxAge(3000); // 설정 시간만큼 pre-flight 리퀘스트 캐싱
-    }
 }
