@@ -26,7 +26,7 @@ import org.springframework.security.web.firewall.HttpFirewall;
 @EnableWebSecurity
 public class SecurityConfig{
 
-    private final CorsConfig config;
+    //private final CorsConfig config;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
@@ -69,7 +69,7 @@ public class SecurityConfig{
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
 
             http
-                    .addFilter(config.corsFilter())
+                    //.addFilter(config.corsFilter())
                     .addFilter(new JwtAuthenticationFilter(authenticationManager, memberService))
                     .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository, tokenProvider, customUserDetailsService, objectMapper));
 
