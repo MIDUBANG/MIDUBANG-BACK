@@ -44,7 +44,7 @@ public class TokenProvider {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_TYPE = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = Duration.ofMinutes(30).toMillis(); //30분 유지
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = Duration.ofDays(1).toMillis(); //30분 유지
     private static final long REFRESH_TOKEN_EXPIRE_TIME = Duration.ofDays(1).toMillis(); //1일 유지
 
     private  Key access_key;
